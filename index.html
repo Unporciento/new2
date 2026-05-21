@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Frenado - Retroexcavadora Komatsu WB93R-5</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-red: #1a0505;
+            --bg-green: #0a140f;
+            --bg-blue: #05101a;
+            --text-gold: #c5a059;
+            --text-red: #c0392b;
+            --text-light: #f5f5f5;
+            --font-title: 'Playfair Display', serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+        body, html {
+            margin: 0; padding: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-dark); color: var(--text-light);
+            font-family: var(--font-body); overflow: hidden;
+        }
+        #app-container { width: 100vw; height: 100vh; position: relative; z-index: 1; }
+        #progress-bar {
+            position: absolute; bottom: 0; left: 0; height: 3px;
+            background: var(--text-gold); z-index: 100;
+            transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        #slide-counter {
+            position: absolute; bottom: 20px; right: 40px; z-index: 100;
+            font-size: 13px; letter-spacing: 3px;
+            color: rgba(255,255,255,0.3); font-weight: 500;
+        }
+        .slide {
+            width: 100vw; height: 100vh; position: absolute; top: 0; left: 0;
+            opacity: 0; visibility: hidden;
+            transform: scale(1.03);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex; flex-direction: column; justify-content: center;
+            box-sizing: border-box;
+        }
+        .slide.active { opacity: 1; visibility: visible; transform: scale(1); z-index: 10; }
+        .anim-up { opacity: 0; transform: translateY(30px); transition: all 1s cubic-bezier(0.25, 1, 0.5, 1); }
+        .delay-1 { transition-delay: 0.15s; }
+        .delay-2 { transition-delay: 0.3s; }
+        .delay-3 { transition-delay: 0.45s; }
+        .delay-4 { transition-delay: 0.6s; }
+        .slide.active .anim-up { opacity: 1; transform: translateY(0); }
+        h1, h2, h3 { font-family: var(--font-title); font-weight: 700; margin: 0; }
+        h1 { font-size: clamp(60px, 8vw, 110px); line-height: 1; }
+        h2 { font-size: clamp(40px, 5.5vw, 70px); margin-bottom: 15px; }
+        p { margin: 0; }
+        .bg-number {
+            position: absolute; font-size: clamp(180px, 25vw, 350px);
+            font-family: var(--font-title); font-style: italic;
+            color: rgba(255,255,255,0.03); z-index: 0; pointer-events: none;
+            line-height: 1; font-weight: 700;
+        }
+        /* SPLIT LAYOUT */
+        .split-screen { display: flex; width: 100%; height: 100%; }
+        .half-text {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            padding: clamp(40px, 6vw, 100px); position: relative;
+        }
+        .half-visual {
+            flex: 1; position: relative; padding: 40px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        /* MEDIA BOX */
+        .media-box {
+            width: 100%; height: 100%; position: relative; overflow: hidden;
+            border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+        .media-box img, .media-box video {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .media-box .overlay-gradient {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+            z-index: 1;
+        }
+        /* LABEL */
+        .label {
+            font-size: 12px; letter-spacing: 3px; font-weight: 600;
+            text-transform: uppercase; color: var(--text-gold); margin-bottom: 12px;
+        }
+        /* TABLA DE COMPONENTES */
+        .comp-table { width: 100%; border-collapse: collapse; }
+        .comp-table th {
+            color: var(--text-gold); font-family: var(--font-title); font-size: clamp(14px, 1.5vw, 20px);
+            text-align: left; padding: 10px 15px 10px 0;
+            border-bottom: 1px solid rgba(197,160,89,0.5); font-weight: 400;
+        }
+        .comp-table td {
+            padding: 8px 12px 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: clamp(11px, 1.2vw, 15px); color: #ccc; vertical-align: middle;
+        }
+        .comp-table td strong { color: #fff; font-weight: 600; }
+        .comp-img { width:60px; height:45px; object-fit:cover; border-radius:4px; }
+        .sym-img { width: 45px; height: 35px; object-fit: contain; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; }
+        
+        /* CARDS DE MANTENIMIENTO */
+        .maint-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
+        .maint-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px; padding: 20px; position: relative; overflow: hidden;
+        }
+        .maint-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+            background: var(--text-gold);
+        }
+        .maint-card .maint-freq {
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--text-gold); font-weight: 600; margin-bottom: 8px;
+        }
+        .maint-card h3 { font-size: clamp(14px, 1.5vw, 18px); margin-bottom: 8px; color: #fff; }
+        .maint-card p { font-size: clamp(11px, 1.1vw, 13px); color: #aaa; line-height: 1.5; }
+        
+        /* NORMAS DE SEGURIDAD */
+        .norma-item {
+            display: flex; gap: 15px; align-items: flex-start;
+            padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .norma-icon {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
+        .norma-icon.red { background: rgba(192,57,43,0.3); }
+        .norma-icon.gold { background: rgba(197,160,89,0.2); }
+        .norma-icon.green { background: rgba(39,174,96,0.2); }
+        .norma-text h4 { font-size: clamp(13px, 1.3vw, 16px); color: #fff; margin-bottom: 4px; }
+        .norma-text p { font-size: clamp(11px, 1.1vw, 13px); color: #999; line-height: 1.5; }
+        
+        /* PILL BADGES */
+        .badge {
+            display: inline-block; padding: 5px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .badge-gold { background: rgba(197,160,89,0.2); color: var(--text-gold); border: 1px solid rgba(197,160,89,0.4); }
+        .badge-red { background: rgba(192,57,43,0.2); color: #e74c3c; border: 1px solid rgba(192,57,43,0.4); }
+        .badge-green { background: rgba(39,174,96,0.2); color: #2ecc71; border: 1px solid rgba(39,174,96,0.4); }
+        
+        /* FULL-CONTENT SLIDES */
+        .slide-scroll { overflow-y: auto; padding: 60px clamp(30px, 5vw, 90px); }
+        .slide-scroll::-webkit-scrollbar { width: 4px; }
+        .slide-scroll::-webkit-scrollbar-thumb { background: rgba(197,160,89,0.4); border-radius: 2px; }
+        #nav-hint {
+            position: absolute; bottom: 22px; left: 50%;
+            transform: translateX(-50%); z-index: 100;
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            color: rgba(255,255,255,0.2); font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<div id="slide-counter">01 / 07</div>
+<div id="nav-hint">← Click izquierdo / Click derecho →</div>
+
+<div id="app-container">
+
+    <div class="slide active" style="background: var(--bg-dark);">
+        <div style="position:absolute;inset:0;z-index:0;">
+            <video autoplay loop muted src="1.mp4" style="width:100%;height:100%;object-fit:cover;opacity:0.35;filter:grayscale(50%) contrast(1.1);"></video>
+            <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.92) 100%);"></div>
+        </div>
+        <div style="text-align:center;z-index:2;display:flex;flex-direction:column;align-items:center;padding:40px;">
+            <div class="anim-up" style="margin-bottom:20px;">
+                <div style="background:rgba(192,57,43,0.9);color:#fff;font-weight:800;font-size:28px;letter-spacing:2px;padding:8px 28px;border-radius:4px;font-family:var(--font-body);">INACAP</div>
+            </div>
+            <p class="anim-up delay-1" style="text-transform:uppercase;letter-spacing:5px;font-weight:500;color:var(--text-gold);font-size:13px;margin-bottom:16px;">
+                Mantenimiento de Frenos Mecánicos en Maquinaria Pesada
+            </p>
+            <h1 class="anim-up delay-2">Sistema de<br><i style="color:#fff;font-weight:400;">Frenado</i></h1>
+            <p class="anim-up delay-3" style="margin-top:18px;font-size:clamp(14px,1.6vw,20px);color:#bbb;max-width:600px;line-height:1.6;">
+                Retroexcavadora Komatsu WB93R-5 — Análisis técnico del sistema hidráulico y frenos húmedos
+            </p>
+            <div class="anim-up delay-4" style="margin-top:50px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#555;line-height:2;">
+                Docente: Gerardo Garrido Fernández &nbsp;|&nbsp; Sección: N1-O2-C2/V &nbsp;|&nbsp; Fecha: 15/05/2026<br>
+                <span style="color:#666;">Aguirre · Olivares · Ramírez · 
+                    
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" style="background:var(--bg-dark);">
+        <div class="split-screen">
+            <div class="half-text">
+                <div class="bg-number" style="top:40%;left:-20px;">01</div>
+                <p class="anim-up label">Introducción</p>
+                <h2 class="anim-up delay-1" style="font-size:clamp(36px,5vw,65px);">El Sistema<br><i style="font-weight:400;">de Frenos</i></h2>
+                <p class="anim-up delay-2" style="margin-top:20px;font-size:clamp(13px,1.4vw,17px);color:#ccc;line-height:1.7;max-width:560px;position:relative;z-index:2;">
+                    En esta maquinaria se utiliza un sistema de freno hidráulico que asegura un frenado totalmente seguro durante el trabajo a realizar.
+                    Opera transformando la fuerza mecánica del operador en presión hidráulica para activar la detención.
+                </p>
+                <p class="anim-up delay-3" style="margin-top:14px;font-size:clamp(13px,1.4vw,17px);color:#bbb;line-height:1.7;max-width:560px;position:relative;z-index:2;">
+                    La retroexcavadora Komatsu WB93R-5 destaca específicamente por utilizar <strong style="color:#fff;">frenos de discos múltiples bañados en aceite (frenos húmedos)</strong>, lo que permite una disipación térmica superior y reduce el desgaste.
+                </p>
+                <div class="anim-up delay-4" style="margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:2;">
+                    <span class="badge badge-gold">Freno de Servicio</span>
+                    <span class="badge badge-red">Freno de Parqueo</span>
+                    <span class="badge badge-green">Frenos Secundarios</span>
+                </div>
+            </div>
+            <div class="half-visual anim-up delay-2">
+                <div class="media-box" style="height:65%;">
+                    <img src="1.jpg" alt="Retroexcavadora Komatsu WB93R-5">
+                    <div class="overlay-gradient"></div>
+                    <div style="position:absolute;bottom:20px;left:20px;z-index:2;">
+                        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-gold);">Komatsu WB93R-5</p>
+                        <p style="font-size:18px;font-family:var(--font-title);color:#fff;">Análisis Técnico de Maquinaria</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" style="background:var(--bg-dark);">
+        <div class="split-screen">
+            <div class="half-text">
+                <div class="bg-number" style="top:30%;left:-20px;">02</div>
+                <p class="anim-up label">Principios de Funcionamiento</p>
+                <h2 class="anim-up delay-1">La Física<br><i style="font-weight:400;">del Frenado</i></h2>
+                
+                <div class="anim-up delay-3" style="margin-top:24px;position:relative;z-index:2;">
+                    <div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-gold);margin-bottom:6px;font-weight:600;">① Generación Mecánica</p>
+                        <p style="font-size:clamp(13px,1.5vw,18px);font-family:var(--font-title);color:#fff;">Se acciona el pedal, generando la fuerza mecánica inicial.</p>
+                    </div>
+                    <div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-gold);margin-bottom:6px;font-weight:600;">② Conversión de Potencia</p>
+                        <p style="font-size:clamp(13px,1.5vw,18px);font-family:var(--font-title);color:#fff;">La energía mecánica se transforma instantáneamente en energía hidráulica.</p>
+                    </div>
+                    <div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-gold);margin-bottom:6px;font-weight:600;">③ Transmisión de Presión</p>
+                        <p style="font-size:clamp(13px,1.5vw,18px);font-family:var(--font-title);color:#fff;">El líquido presurizado viaja hacia los frenos de las ruedas.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="half-visual anim-up delay-2" style="flex-direction:column;gap:20px;padding:40px;">
+                <div class="media-box" style="height:35%; width:100%; margin-bottom:10px; border-radius:10px;">
+                    <video autoplay loop muted src="2.mp4" style="width:100%;height:100%;object-fit:cover;"></video>
+                </div>
+                <div style="width:100%;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);border-radius:10px;padding:18px 22px;">
+                    <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#e74c3c;font-weight:600;margin-bottom:8px;">Freno de Servicio</p>
+                    <p style="font-size:clamp(12px,1.3vw,15px);color:#ddd;line-height:1.5;">Es el freno principal que se usa durante la operación normal de la retroexcavadora.</p>
+                </div>
+                <div style="width:100%;background:rgba(197,160,89,0.1);border:1px solid rgba(197,160,89,0.3);border-radius:10px;padding:18px 22px;">
+                    <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-gold);font-weight:600;margin-bottom:8px;">Freno de Parqueo</p>
+                    <p style="font-size:clamp(12px,1.3vw,15px);color:#ddd;line-height:1.5;">Este sistema inmoviliza la máquina de forma segura mientras esta se encuentra estacionada.</p>
+                </div>
+                <div style="width:100%;background:rgba(39,174,96,0.1);border:1px solid rgba(39,174,96,0.3);border-radius:10px;padding:18px 22px;">
+                    <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#2ecc71;font-weight:600;margin-bottom:8px;">Frenos Secundarios</p>
+                    <p style="font-size:clamp(12px,1.3vw,15px);color:#ddd;line-height:1.5;">Si llega a ocurrir una emergencia o falla del sistema principal, este actúa inmediatamente.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" style="background:#0d0d0d;">
+        <div class="bg-number" style="top:10%;left:auto;right:-50px;">03</div>
+        <div class="slide-scroll" style="justify-content:flex-start;">
+            <p class="anim-up label" style="margin-bottom:6px;">Desglose de Hardware</p>
+            <h2 class="anim-up delay-1" style="font-size:clamp(28px,4vw,55px);margin-bottom:20px;">Tabla de <i style="font-weight:400;">Componentes</i></h2>
+            <div class="anim-up delay-2">
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th style="width:20%;">Componente</th>
+                            <th style="width:14%;">Referencia</th>
+                            <th style="width:15%;">Simbología</th>
+                            <th style="width:51%;">Descripción Técnica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pedal de Freno</strong></td>
+                            <td><img src="2.jpg" alt="Pedal" class="comp-img"></td>
+                            <td><img src="simb1.jpg" alt="Simbología Pedal" class="sym-img"></td>
+                            <td>Entrega al operador el control total a la hora de frenar la maquinaria.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Depósito / Tanque</strong></td>
+                            <td><img src="3.jpg" alt="Deposito" class="comp-img"></td>
+                            <td><img src="simb2.jpg" alt="Simbología Tanque" class="sym-img"></td>
+                            <td>Acá se acumula todo el líquido hidráulico necesario para el circuito.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bomba Hidráulica</strong></td>
+                            <td><img src="4.jpg" alt="Bomba" class="comp-img"></td>
+                            <td><img src="simb3.jpg" alt="Simbología Bomba" class="sym-img"></td>
+                            <td>Mantiene el fluido en constante movimiento presurizado.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Acumuladores</strong></td>
+                            <td><img src="5.jpg" alt="Acumulador" class="comp-img"></td>
+                            <td><img src="simb4.jpg" alt="Simbología Acumulador" class="sym-img"></td>
+                            <td>Almacenan energía, reciben el impacto de la presión y proporcionan fluido hidráulico en caso de algún problema.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Filtros</strong></td>
+                            <td><img src="6.jpg" alt="Filtro" class="comp-img"></td>
+                            <td><img src="simb5.jpg" alt="Simbología Filtro" class="sym-img"></td>
+                            <td>Estos protegen a los demás componentes de cualquier partícula que pueda ser dañina para el sistema.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Electro válvula</strong></td>
+                            <td><img src="7.jpg" alt="Válvula" class="comp-img"></td>
+                            <td><img src="simb6.jpg" alt="Simbología Válvula" class="sym-img"></td>
+                            <td>Regula de manera precisa el caudal de los fluidos a través del circuito.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cilindro de freno</strong></td>
+                            <td><img src="8.jpg" alt="Cilindro" class="comp-img"></td>
+                            <td><img src="simb7.jpg" alt="Simbología Cilindro" class="sym-img"></td>
+                            <td>Este ejecuta físicamente la acción que queramos realizar en el sistema.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Discos de Freno</strong></td>
+                            <td><img src="9.jpg" alt="Discos" class="comp-img"></td>
+                            <td><img src="simb8.jpg" alt="Simbología Discos" class="sym-img"></td>
+                            <td>Ubicados en las ruedas, reciben la fricción de las pastillas de freno para detener el equipo.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Disco Estacionamiento</strong></td>
+                            <td><img src="10.jpg" alt="Disco Estacionamiento" class="comp-img"></td>
+                            <td><img src="simb9.jpg" alt="Simbología Disco Estacionamiento" class="sym-img"></td>
+                            <td>Inmoviliza el equipo de forma mecánica mediante una palanca y un sistema de bloqueo.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" style="background:var(--bg-dark);">
+        <div class="split-screen">
+            <div class="half-text" style="flex:1.2;">
+                <div class="bg-number" style="top:30%;left:-30px;">04</div>
+                <p class="anim-up label">Seguridad y Medio Ambiente</p>
+                <h2 class="anim-up delay-1" style="font-size:clamp(32px,4.5vw,60px);">Normativas<br><i style="font-weight:400;">Industriales</i></h2>
+                <div class="anim-up delay-2" style="margin-top:20px;position:relative;z-index:2;">
+                    <div class="norma-item">
+                        <div class="norma-icon red">🦺</div>
+                        <div class="norma-text">
+                            <h4>Medidas de Seguridad</h4>
+                            <p>Utilizar herramientas adecuadas. Trabajar estrictamente con el equipo apagado. Revisar fugas hidráulicas antes de trabajar.</p>
+                        </div>
+                    </div>
+                    <div class="norma-item">
+                        <div class="norma-icon gold">🔧</div>
+                        <div class="norma-text">
+                            <h4>Precaución con Componentes</h4>
+                            <p>No mezclar distintos tipos de líquido de frenos. Verificar minuciosamente el estado de discos, pastillas y mangueras.</p>
+                        </div>
+                    </div>
+                    <div class="norma-item">
+                        <div class="norma-icon green">♻️</div>
+                        <div class="norma-text">
+                            <h4>Cuidado Medioambiental</h4>
+                            <p>Disponer correctamente el líquido de frenos usado en contenedores especiales. No botar aceites o fluidos al suelo. Mantener el área limpia.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="half-visual anim-up delay-3" style="flex-direction:column;gap:16px;padding:40px;justify-content:center;">
+                <div style="background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.3);border-radius:10px;padding:16px 20px; width: 100%;">
+                    <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#e74c3c;font-weight:600;margin-bottom:8px;">Marco Legal Aplicado</p>
+                    <p style="font-size:13px;color:#ccc;line-height:1.6;"><strong style="color:#fff;">Ley 19.300:</strong> Protege el medio ambiente y regula residuos contaminantes.</p>
+                    <p style="font-size:13px;color:#ccc;line-height:1.6;margin-top:6px;"><strong style="color:#fff;">D.S. N°148:</strong> Regula el manejo de aceites y líquidos peligrosos en talleres.</p>
+                    <p style="font-size:13px;color:#ccc;line-height:1.6;margin-top:6px;"><strong style="color:#fff;">D.S. N°594:</strong> Establece normas de seguridad e higiene en talleres mecánicos.</p>
+                </div>
+                
+                <div style="display: flex; gap: 15px; width: 100%;">
+                    <div style="flex: 1; background:rgba(39,174,96,0.08); border:1px solid rgba(39,174,96,0.25); border-radius:10px; padding:16px; display: flex; flex-direction: column;">
+                        <p style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#2ecc71; font-weight:600; margin-bottom:12px; text-align: center;">✅ Aplicación Correcta</p>
+                        <div class="media-box" style="height: 140px; width: 100%; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                            <img src="seguridad_ok.jpg" alt="Aplicación Correcta - Uso de EPP" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <p style="font-size:11px; color:#ccc; line-height:1.4; margin-top:10px; text-align: center;">Taller ordenado y uso completo de EPP.</p>
+                    </div>
+
+                    <div style="flex: 1; background:rgba(192,57,43,0.08); border:1px solid rgba(192,57,43,0.25); border-radius:10px; padding:16px; display: flex; flex-direction: column;">
+                        <p style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#e74c3c; font-weight:600; margin-bottom:12px; text-align: center;">❌ Aplicación Incorrecta</p>
+                        <div class="media-box" style="height: 140px; width: 100%; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                            <img src="seguridad_no.jpg" alt="Aplicación Incorrecta - Sin EPP" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <p style="font-size:11px; color:#ccc; line-height:1.4; margin-top:10px; text-align: center;">Derrame de fluidos y omisión de seguridad.</p>
+                    </div>
+                </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="slide" style="background:var(--bg-blue);">
+        <div class="split-screen">
+            <div class="half-text" style="padding-right: 20px;">
+                <div class="bg-number" style="top:20%;right:0;left:auto;">05</div>
+                <p class="anim-up label">Interpretación de Planos</p>
+                <h2 class="anim-up delay-1" style="font-size:clamp(28px,4vw,55px);">Plano Hidráulico <br><i style="font-weight:400;">del Circuito</i></h2>
+                <p class="anim-up delay-2" style="font-size:clamp(12px,1.3vw,15px);color:#aaa;margin-top:8px;max-width:700px;line-height:1.6;">
+                    Identificación esquemática de los componentes, los subsistemas operativos y la delineación exacta de las vías de alta y baja presión.
+                </p>
+                
+                <div class="anim-up delay-3" style="display:flex;flex-direction:column;gap:12px; margin-top: 25px;">
+                    <div style="background:rgba(192,57,43,0.1);border-radius:8px;padding:12px;">
+                        <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e74c3c;font-weight:600;margin-bottom:6px;">Alta Presión (Línea de trabajo)</p>
+                        <p style="font-size:12px;color:#ccc;line-height:1.5;">Circuito principal desde bomba hasta cilindros de freno en ruedas traseras.</p>
+                    </div>
+                    <div style="background:rgba(197,160,89,0.1);border-radius:8px;padding:12px;">
+                        <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-gold);font-weight:600;margin-bottom:6px;">Baja Presión / Retorno</p>
+                        <p style="font-size:12px;color:#ccc;line-height:1.5;">Línea de retorno al tanque o depósito desde la válvula de control principal.</p>
+                    </div>
+                    <div style="background:rgba(79,195,247,0.08);border-radius:8px;padding:12px;">
+                        <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#4fc3f7;font-weight:600;margin-bottom:6px;">Subsistema Acumuladores</p>
+                        <p style="font-size:12px;color:#ccc;line-height:1.5;">Acumuladores en paralelo. Garantizan frenado de emergencia y absorben picos de presión.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;">
+                        <p style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#fff;font-weight:600;margin-bottom:6px;">Componentes Identificados en Plano</p>
+                        <p style="font-size:12px;color:#ccc;line-height:1.5;">1. Bomba Hidráulica | 2. Válvula de Control Principal | 3. Acumuladores de Nitrógeno | 4. Cilindros Actuadores | 5. Depósito.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="half-visual anim-up delay-2" style="padding-left: 10px;">
+                <div class="media-box" style="height: 85%; width: 100%; box-shadow: none;">
+                    <img src="plano.jpg" alt="Plano Hidráulico Real" style="width: 100%; height: 100%; object-fit: contain; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" style="background:var(--bg-dark);align-items:center;text-align:center;">
+        <div style="position:absolute;inset:0;z-index:0;">
+            <video autoplay loop muted src="1.mp4" style="width:100%;height:100%;object-fit:cover;opacity:0.12;filter:grayscale(100%);"></video>
+            <div style="position:absolute;inset:0;background:radial-gradient(circle, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.95) 100%);"></div>
+        </div>
+        <div style="max-width:900px;position:relative;z-index:2;padding:40px;">
+            <p class="anim-up" style="text-transform:uppercase;letter-spacing:4px;color:var(--text-gold);font-weight:600;margin-bottom:18px;font-size:13px;">Conclusión Técnica</p>
+            <h1 class="anim-up delay-1" style="font-size:clamp(50px,7vw,90px);margin-bottom:30px;line-height:1.1;">
+                Ingeniería que<br><i style="font-weight:400;color:#fff;">Salva Vidas</i>
+            </h1>
+            <p class="anim-up delay-2" style="font-size:clamp(14px,1.7vw,19px);line-height:1.7;margin:0 auto 30px;color:#bbb;max-width:750px;">
+                El sistema de frenos de discos múltiples húmedos (sumergidos en aceite) de la Komatsu WB93R-5 representa una ventaja crítica frente a sistemas secos convencionales. El fluido hidráulico disipa eficientemente la inmensa carga térmica generada por la fricción en equipos de alto tonelaje, previniendo la cristalización de los componentes y reduciendo drásticamente el desgaste abrasivo. Un mantenimiento preventivo riguroso del fluido y el respeto irrestricto por las normativas de seguridad no solo prolongan la vida útil del equipo, sino que son la garantía principal de seguridad en la operación.
+            </p>
+            
+            <div class="anim-up delay-4" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap; margin-top: 30px;">
+                <div style="padding:14px 28px;border:1px solid var(--text-gold);color:var(--text-gold);text-transform:uppercase;letter-spacing:2px;font-weight:600;font-size:12px;border-radius:4px;background:rgba(197,160,89,0.05);">
+                    Fin de la Presentación
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progress-bar');
+    const slideCounter = document.getElementById('slide-counter');
+    const navHint = document.getElementById('nav-hint');
+    let hintTimer = setTimeout(() => { navHint.style.opacity = '0'; navHint.style.transition = 'opacity 1s'; }, 4000);
+    
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    
+    function updateView() {
+        slides.forEach((slide, idx) => {
+            slide.classList.remove('active');
+            if (idx === currentSlide) slide.classList.add('active');
+        });
+        progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        slideCounter.innerText = `${pad(currentSlide + 1)} / ${pad(slides.length)}`;
+        const vids = slides[currentSlide].querySelectorAll('video');
+        vids.forEach(v => { v.currentTime = 0; v.play().catch(()=>{}); });
+    }
+    
+    document.addEventListener('keydown', (e) => {
+        if (['ArrowRight', ' ', 'PageDown', 'ArrowDown'].includes(e.key) && currentSlide < slides.length - 1) {
+            currentSlide++; updateView();
+        } else if (['ArrowLeft', 'PageUp', 'ArrowUp'].includes(e.key) && currentSlide > 0) {
+            currentSlide--; updateView();
+        }
+    });
+    
+    document.addEventListener('click', (e) => {
+        const tag = e.target.tagName.toLowerCase();
+        if (['a','button','input','select','textarea'].includes(tag)) return;
+        if (e.clientX > window.innerWidth / 2 && currentSlide < slides.length - 1) {
+            currentSlide++; updateView();
+        } else if (e.clientX <= window.innerWidth / 2 && currentSlide > 0) {
+            currentSlide--; updateView();
+        }
+    });
+
+    updateView();
+</script>
+</body>
+</html>
