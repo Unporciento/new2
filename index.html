@@ -166,7 +166,7 @@
     <!-- SLIDE 1: PORTADA -->
     <div class="slide active" style="background: var(--bg-dark);">
         <div style="position:absolute;inset:0;z-index:0;">
-            <video autoplay loop muted src="1.mp4" style="width:100%;height:100%;object-fit:cover;opacity:0.35;filter:grayscale(50%) contrast(1.1);"></video>
+            <video autoplay loop muted playsinline src="1.mp4" style="width:100%;height:100%;object-fit:cover;opacity:0.35;filter:grayscale(50%) contrast(1.1);"></video>
             <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.92) 100%);"></div>
         </div>
         <div style="text-align:center;z-index:2;display:flex;flex-direction:column;align-items:center;padding:40px;">
@@ -477,7 +477,7 @@
     <!-- SLIDE 8: CONCLUSIÓN -->
     <div class="slide" style="background:var(--bg-dark);align-items:center;text-align:center;">
         <div style="position:absolute;inset:0;z-index:0;">
-            <video autoplay loop muted src="1.mp4" style="width:100%;height:100%;object-fit:cover;opacity:0.12;filter:grayscale(100%);"></video>
+            <video autoplay loop muted playsinline src="1.mp4" style="width:100%;height:100%;object-fit:cover;opacity:0.12;filter:grayscale(100%);"></video>
             <div style="position:absolute;inset:0;background:radial-gradient(circle, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.95) 100%);"></div>
         </div>
         <div style="max-width:900px;position:relative;z-index:2;padding:40px;">
@@ -538,6 +538,22 @@
     });
 
     updateView();
+
+    // Intento inmediato de reproducir el video del slide 1 (funciona en algunos navegadores)
+    document.addEventListener('DOMContentLoaded', () => {
+        slides[0].querySelectorAll('video').forEach(v => v.play().catch(() => {}));
+    });
+    // Fix para GitHub Pages: el navegador bloquea autoplay hasta la primera interacción del usuario.
+    // En el primer click/tecla/toque, forzamos play del video de la portada.
+    function unlockFirstVideo() {
+        slides[0].querySelectorAll('video').forEach(v => v.play().catch(() => {}));
+        document.removeEventListener('click', unlockFirstVideo, true);
+        document.removeEventListener('keydown', unlockFirstVideo, true);
+        document.removeEventListener('touchstart', unlockFirstVideo, true);
+    }
+    document.addEventListener('click', unlockFirstVideo, true);
+    document.addEventListener('keydown', unlockFirstVideo, true);
+    document.addEventListener('touchstart', unlockFirstVideo, true);
 </script>
 </body>
 </html>
