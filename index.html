@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Proyecto de Innovación INACAP: Autonomía Hídrica del Complejo Turístico Playa La Virgen mediante Planta Desalinizadora de Ósmosis Inversa, Red HDPE Sectorizada y Macromedidores Smart Water IoT">
+<meta name="author" content="Equipo de Ingeniería · INACAP">
+<title>Autonomía Hídrica · Complejo Turístico Playa La Virgen · INACAP</title>
+<meta property="og:title" content="Optimización Hídrica - Playa La Virgen">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1b3d2d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b3d2d'/><path d='M16 4 C16 4 7 14 7 19 a9 9 0 0 0 18 0 C25 14 16 4 16 4z' fill='%23b8903a'/></svg>">
+
+<!-- Fuentes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+
+<!-- Estilos -->
+<link rel="stylesheet" href="css/styles.css">
+
+<!-- Three.js import map -->
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     SISTEMA DE IMPRESIÓN PDF  —  Ctrl+P
+     Genera un documento académico completo de ~6 páginas:
+       Pág 1  — Portada institucional
+       Pág 2  — Diagnóstico del problema
+       Pág 3-4 — Narrativa (cómic)
+       Pág 5  — Ficha técnica de la maqueta 3D
+       Pág 6  — Matriz CDM
+       Pág 7  — Créditos del equipo
+     ══════════════════════════════════════════════════════════════════════ -->
+<style id="print-styles">
+/* ── Variables de color para impresión (coinciden con la paleta del proyecto) */
+:root {
+  --p-green:  #1b3d2d;
+  --p-gold:   #b8903a;
+  --p-light:  #f7f4ef;
+  --p-text:   #1c1c1c;
+  --p-muted:  #555;
+  --p-border: #d4c9a8;
+}
+
+@media print {
+  /* ── Reset global para impresión ───────────────────────────────────────── */
+  *, *::before, *::after {
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* ── Ocultar elementos no imprimibles ──────────────────────────────────── */
+  .nav-tabs,
+  .header-export-hint,
+  .header-progress-bar,
+  .header-rule,
+  #section-3d .viewer-layout,
+  #section-3d .canvas-wrap,
+  #section-3d .viewer-topbar p,
+  .sidebar, .sidebar-toggle,
+  #alerta-fuga, #canvas-tooltip,
+  #leak-history-panel, #leak-timer-badge,
+  #liters-lost-hud, #session-stats-hud,
+  #day-night-indicator, #cam-minimap,
+  #shortcut-panel, #btn-shortcuts,
+  #three-loader, #onboarding-toast,
+  audio, script { display: none !important; }
+
+  /* ── Mostrar TODAS las secciones ───────────────────────────────────────── */
+  .section { display: block !important; }
+
+  /* ── Tipografía base ───────────────────────────────────────────────────── */
+  body {
+    font-family: 'Crimson Pro', Georgia, serif !important;
+    font-size: 10.5pt !important;
+    line-height: 1.6 !important;
+    color: var(--p-text) !important;
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     PÁGINA 1 — PORTADA INSTITUCIONAL
+     ════════════════════════════════════════════════════════════════════════ */
+  header {
+    background: var(--p-green) !important;
+    color: #fff !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 3cm 2.5cm !important;
+    page-break-after: always !important;
+    position: relative !important;
+  }
+  /* Línea dorada superior */
+  header::before {
+    content: '' !important;
+    display: block !important;
+    width: 100% !important;
+    height: 6px !important;
+    background: var(--p-gold) !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+  /* Bloque central de portada */
+  header::after {
+    content: '' !important;
+    display: block !important;
+    width: 60px !important;
+    height: 2px !important;
+    background: var(--p-gold) !important;
+    margin: 1.5cm auto 0 !important;
+  }
+  header .header-institution {
+    display: block !important;
+    color: rgba(184,144,58,.85) !important;
+    font-size: 8pt !important;
+    letter-spacing: 0.25em !important;
+    text-transform: uppercase !important;
+    border: 1px solid rgba(184,144,58,.4) !important;
+    padding: .5rem 1.5rem !important;
+    margin-bottom: 1.8cm !important;
+    display: inline-block !important;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 28pt !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    line-height: 1.2 !important;
+    margin-bottom: .4cm !important;
+  }
+  header h1 em {
+    display: block !important;
+    color: #ddb85a !important;
+    font-style: normal !important;
+    font-size: 20pt !important;
+    margin-top: .3cm !important;
+  }
+  header .header-subtitle {
+    color: rgba(255,255,255,.7) !important;
+    font-style: italic !important;
+    font-size: 11pt !important;
+    margin-top: .8cm !important;
+  }
+  /* Bloque de datos de portada (inyectado por JS) */
+  #print-cover-data {
+    display: block !important;
+    margin-top: 2.5cm !important;
+    padding: .8cm 1.5cm !important;
+    border: 1px solid rgba(184,144,58,.35) !important;
+    color: rgba(255,255,255,.8) !important;
+    font-size: 9pt !important;
+    line-height: 2.2 !important;
+    text-align: left !important;
+    max-width: 14cm !important;
+  }
+  #print-cover-data strong { color: #ddb85a !important; }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     PÁGINA 2 — DIAGNÓSTICO DEL PROBLEMA (bloque oculto en pantalla)
+     ════════════════════════════════════════════════════════════════════════ */
+  #print-diagnostico {
+    display: block !important;
+    page-break-before: always !important;
+    padding: 1.5cm 2cm !important;
+    font-size: 10.5pt !important;
+  }
+  #print-diagnostico h2 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 22pt !important;
+    color: var(--p-green) !important;
+    border-bottom: 3px solid var(--p-gold) !important;
+    padding-bottom: .3cm !important;
+    margin-bottom: .8cm !important;
+  }
+  #print-diagnostico .diag-cols {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.2cm !important;
+    margin-top: .8cm !important;
+  }
+  #print-diagnostico .diag-col h3 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 13pt !important;
+    color: var(--p-green) !important;
+    margin-bottom: .4cm !important;
+    padding-left: .3cm !important;
+    border-left: 3px solid var(--p-gold) !important;
+  }
+  #print-diagnostico .diag-col ul {
+    padding-left: 1.2em !important;
+    color: var(--p-text) !important;
+    line-height: 1.9 !important;
+  }
+  #print-diagnostico .diag-col ul li { margin-bottom: .25cm !important; }
+  #print-diagnostico .diag-col ul li strong { color: var(--p-green) !important; }
+  #print-diagnostico .diag-context {
+    margin-top: .8cm !important;
+    padding: .6cm .8cm !important;
+    background: #f0ece4 !important;
+    border-left: 4px solid var(--p-gold) !important;
+    font-style: italic !important;
+    color: var(--p-muted) !important;
+    font-size: 10pt !important;
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     PÁGINAS 3-4 — NARRATIVA DEL PROYECTO (cómic)
+     ════════════════════════════════════════════════════════════════════════ */
+  #section-comic {
+    page-break-before: always !important;
+    padding: 0 !important;
+  }
+  #section-comic .sec-header {
+    padding: .8cm 2cm .5cm !important;
+    text-align: center !important;
+  }
+  #section-comic .sec-eyebrow {
+    color: var(--p-gold) !important;
+    font-size: 8pt !important;
+    letter-spacing: .2em !important;
+    text-transform: uppercase !important;
+    display: block !important;
+  }
+  #section-comic .sec-title {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 18pt !important;
+    color: var(--p-green) !important;
+    margin: .2cm 0 !important;
+  }
+  #section-comic .sec-rule {
+    width: 50px !important;
+    height: 2px !important;
+    background: var(--p-gold) !important;
+    margin: .3cm auto !important;
+  }
+  #section-comic .inner { padding: 0 1.5cm 1cm !important; }
+  .comic-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: .7cm !important;
+  }
+  .comic-card {
+    border: 1px solid var(--p-border) !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    background: #fff !important;
+    overflow: hidden !important;
+  }
+  .comic-tag {
+    background: var(--p-green) !important;
+    color: #ddb85a !important;
+    font-size: 7pt !important;
+    letter-spacing: .12em !important;
+    text-transform: uppercase !important;
+    padding: .2cm .4cm !important;
+    display: flex !important;
+    gap: .3em !important;
+  }
+  .scene-num { opacity: .6 !important; font-size: 10pt !important; }
+  .comic-img-wrap {
+    width: 100% !important;
+    aspect-ratio: 4/3 !important;
+    overflow: hidden !important;
+    background: #e8e0d0 !important;
+  }
+  .comic-img-wrap img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  .comic-body { padding: .4cm .5cm !important; }
+  .comic-scene-title {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 9pt !important;
+    color: var(--p-green) !important;
+    font-weight: 700 !important;
+    margin-bottom: .15cm !important;
+  }
+  .comic-body p { font-size: 8.5pt !important; color: var(--p-muted) !important; line-height: 1.5 !important; }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     PÁGINA 5 — FICHA TÉCNICA MAQUETA 3D
+     ════════════════════════════════════════════════════════════════════════ */
+  #section-3d {
+    page-break-before: always !important;
+    padding: 1.5cm 2cm !important;
+  }
+  #section-3d .viewer-topbar {
+    display: block !important;
+    border: none !important;
+    padding: 0 0 .5cm !important;
+  }
+  #section-3d .viewer-topbar h2 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 22pt !important;
+    color: var(--p-green) !important;
+    border-bottom: 3px solid var(--p-gold) !important;
+    padding-bottom: .3cm !important;
+    margin-bottom: .6cm !important;
+  }
+  #section-3d .legend { display: none !important; }
+  /* Bloque de ficha técnica (inyectado por JS en print-prep) */
+  #print-3d-ficha {
+    display: block !important;
+  }
+  #print-3d-ficha .ficha-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: .8cm !important;
+    margin-top: .5cm !important;
+  }
+  #print-3d-ficha .ficha-box {
+    border: 1px solid var(--p-border) !important;
+    padding: .5cm .7cm !important;
+    background: #faf8f4 !important;
+  }
+  #print-3d-ficha .ficha-box h4 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 10pt !important;
+    color: var(--p-green) !important;
+    border-bottom: 1px solid var(--p-border) !important;
+    padding-bottom: .2cm !important;
+    margin-bottom: .3cm !important;
+    text-transform: uppercase !important;
+    letter-spacing: .08em !important;
+  }
+  #print-3d-ficha .ficha-box ul {
+    padding-left: 1em !important;
+    font-size: 9pt !important;
+    line-height: 1.9 !important;
+    color: var(--p-text) !important;
+  }
+  #print-3d-ficha .ficha-placeholder {
+    margin-top: .8cm !important;
+    height: 6cm !important;
+    border: 2px dashed var(--p-gold) !important;
+    background: #f5f0e8 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    font-family: 'Playfair Display', serif !important;
+    font-size: 11pt !important;
+    color: var(--p-green) !important;
+    line-height: 2 !important;
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     PÁGINA 6 — MATRIZ CDM
+     ════════════════════════════════════════════════════════════════════════ */
+  #section-cdm {
+    page-break-before: always !important;
+    padding: 0 !important;
+  }
+  #section-cdm .sec-header {
+    padding: .8cm 2cm .5cm !important;
+    text-align: center !important;
+  }
+  #section-cdm .sec-eyebrow { color: var(--p-gold) !important; font-size: 8pt !important; }
+  #section-cdm .sec-title {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 18pt !important;
+    color: var(--p-green) !important;
+  }
+  #section-cdm .inner { padding: .3cm 1.5cm 1cm !important; }
+  .cdm-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: .6cm !important;
+  }
+  .cdm-card {
+    border: 1px solid var(--p-border) !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    background: #fff !important;
+    overflow: hidden !important;
+  }
+  .cdm-card--cualidades  .cdm-header { background: var(--p-green) !important; }
+  .cdm-card--debilidades .cdm-header { background: #6b5230 !important; }
+  .cdm-card--mejoras     .cdm-header { background: #3a6b4a !important; }
+  .cdm-header {
+    padding: .5cm .7cm !important;
+    text-align: center !important;
+  }
+  .cdm-icon { font-size: 14pt !important; color: #ddb85a !important; display: block !important; margin-bottom: .15cm !important; }
+  .cdm-header h3 { font-family: 'Playfair Display', serif !important; font-size: 14pt !important; color: #fff !important; margin: 0 !important; }
+  .cdm-header p { font-size: 7.5pt !important; color: rgba(255,255,255,.8) !important; letter-spacing: .1em !important; text-transform: uppercase !important; margin: .1cm 0 0 !important; }
+  .cdm-list { padding: .5cm .6cm !important; list-style: none !important; }
+  .cdm-list li { padding-left: .8em !important; margin-bottom: .35cm !important; font-size: 9pt !important; color: var(--p-text) !important; position: relative !important; line-height: 1.55 !important; }
+  .cdm-list li::before { content: '■' !important; position: absolute !important; left: 0 !important; top: 3px !important; font-size: 5pt !important; color: var(--p-gold) !important; }
+  .cdm-list strong { display: block !important; font-family: 'Playfair Display', serif !important; font-size: 9.5pt !important; color: var(--p-green) !important; margin-bottom: .05cm !important; }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     PÁGINA 7 — FOOTER / CRÉDITOS
+     ════════════════════════════════════════════════════════════════════════ */
+  footer {
+    page-break-before: always !important;
+    background: var(--p-green) !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 3cm 3cm !important;
+    border-top: 6px solid var(--p-gold) !important;
+  }
+  .footer-top {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 2cm !important;
+    align-items: start !important;
+    margin-bottom: 2cm !important;
+  }
+  .footer-brand strong {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 18pt !important;
+    color: #fff !important;
+    display: block !important;
+    margin-bottom: .3cm !important;
+  }
+  .footer-brand span { color: rgba(255,255,255,.7) !important; font-size: 10pt !important; display: block !important; }
+  .footer-credits-label {
+    font-size: 7.5pt !important;
+    letter-spacing: .2em !important;
+    text-transform: uppercase !important;
+    color: #ddb85a !important;
+    display: block !important;
+    margin-bottom: .3cm !important;
+  }
+  .footer-names { color: #fff !important; font-size: 11pt !important; line-height: 1.9 !important; }
+  .footer-professor-name { color: #fff !important; font-family: 'Playfair Display', serif !important; font-size: 13pt !important; font-weight: 600 !important; }
+  .footer-professor-course { color: rgba(255,255,255,.7) !important; font-style: italic !important; font-size: 10pt !important; margin-top: .2cm !important; }
+  .footer-bottom {
+    border-top: 1px solid rgba(184,144,58,.3) !important;
+    padding-top: .8cm !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 8.5pt !important;
+    color: rgba(255,255,255,.5) !important;
+  }
+  .footer-bottom-rule { display: inline-block !important; width: 1px !important; height: 10px !important; background: rgba(255,255,255,.3) !important; margin: 0 .5em !important; vertical-align: middle !important; }
+
+  /* ── Número de página en cada hoja ─────────────────────────────────────── */
+  @page {
+    margin: 0;
+    size: A4 portrait;
+  }
+}
+</style>
+
+<!-- Script print-prep: inyecta bloques extra ANTES de imprimir y los limpia después -->
+<script>
+(function() {
+  // ── Fecha en la portada ─────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.setAttribute('data-print-date',
+      new Date().toLocaleDateString('es-CL', { year:'numeric', month:'long', day:'numeric' })
+    );
+
+    // ── Bloque de datos en la portada ──────────────────────────────────────
+    const coverData = document.createElement('div');
+    coverData.id = 'print-cover-data';
+    coverData.style.display = 'none';   // oculto en pantalla
+    coverData.innerHTML = `
+      <div><strong>Proyecto:</strong> Optimización Hídrica del Complejo Turístico Playa La Virgen</div>
+      <div><strong>Asignatura:</strong> Innovación y Emprendimiento</div>
+      <div><strong>Institución:</strong> INACAP · Sede Atacama</div>
+      <div><strong>Docente:</strong> Raul Alberto Araya Zepeda</div>
+      <div><strong>Equipo:</strong> Simón Olivares · Julio Sinisterra · Millaray Aguirre · Renato Borquez · Wiljer Mamani</div>
+      <div><strong>Fecha:</strong> <span id="cover-date"></span></div>
+    `;
+    document.querySelector('header')?.appendChild(coverData);
+    document.getElementById('cover-date').textContent =
+      new Date().toLocaleDateString('es-CL', { year:'numeric', month:'long', day:'numeric' });
+
+    // ── Página 2: Diagnóstico (solo impresión) ────────────────────────────
+    const diag = document.createElement('section');
+    diag.id = 'print-diagnostico';
+    diag.style.display = 'none';
+    diag.innerHTML = `
+      <h2>Diagnóstico del Problema y Propuesta de Solución</h2>
+      <div class="diag-context">
+        El Complejo Turístico Playa La Virgen se ubica en la Región de Atacama, una de las zonas
+        con mayor escasez hídrica del mundo — con solo 1.5 mm de precipitación promedio anual. Este proyecto responde a una problemática real detectada
+        en terreno y propone soluciones de ingeniería concretas, innovadoras y sustentables.
+      </div>
+      <div class="diag-cols">
+        <div class="diag-col">
+          <h3>⚠️ Problemas Identificados</h3>
+          <ul>
+            <li><strong>Dependencia de camiones aljibe</strong> — altos costos operacionales y logística compleja en zona árida.</li>
+            <li><strong>Fugas subterráneas invisibles</strong> — tramos HDPE sin planos digitales presentan filtraciones ocultas bajo la arena.</li>
+            <li><strong>Mantenimiento puramente reactivo</strong> — sin sectorización ni monitoreo digital, las fallas solo se detectan cuando ya son visibles.</li>
+            <li><strong>Desperdicio nocturno</strong> — consumo anormal por fugas y malos hábitos de turistas (dejar correr el agua).</li>
+          </ul>
+        </div>
+        <div class="diag-col">
+          <h3>✅ Soluciones Propuestas</h3>
+          <ul>
+            <li><strong>Planta Desalinizadora de Osmosis Inversa</strong> — genera 35 m³ diarios, logrando autonomía hídrica total.</li>
+            <li><strong>Sensores IoT y Smart Water</strong> — macromedidores ultrasónicos en la nube detectan micro-fugas en tiempo real.</li>
+            <li><strong>Sectorización y renovación HDPE</strong> — reemplazar tramos defectuosos y dividir en sectores medibles.</li>
+            <li><strong>Plan de Mantenimiento Preventivo</strong> — inspecciones programadas basadas en datos de sensores.</li>
+            <li><strong>Reutilización de Aguas Grises</strong> — sistema de filtración para riego de áreas verdes del complejo.</li>
+          </ul>
+        </div>
+      </div>
+    `;
+    // Insertar antes de section-comic
+    const comic = document.getElementById('section-comic');
+    comic?.parentNode?.insertBefore(diag, comic);
+
+    // ── Página 5: Ficha técnica de la maqueta 3D (solo impresión) ────────
+    const ficha = document.createElement('div');
+    ficha.id = 'print-3d-ficha';
+    ficha.style.display = 'none';
+    ficha.innerHTML = `
+      <div class="ficha-grid">
+        <div class="ficha-box">
+          <h4>Componentes del Sistema Modelado</h4>
+          <ul>
+            <li>Planta Desalinizadora de Osmosis Inversa</li>
+            <li>Estanque principal en la cima del cerro</li>
+            <li>Red de tuberías HDPE sectorizada (9 puntos)</li>
+            <li>6 cabañas de huéspedes con red de distribución</li>
+            <li>Casa principal con sistema independiente</li>
+            <li>Macromedidores digitales (bocas de registro)</li>
+            <li>Sistema de flujo animado con detección de fugas</li>
+          </ul>
+        </div>
+        <div class="ficha-box">
+          <h4>Funcionalidades Interactivas</h4>
+          <ul>
+            <li>Simulador de fugas con 3 niveles de gravedad</li>
+            <li>Panel de presión en tiempo real (bar)</li>
+            <li>Modo Radiografía X-Ray de tuberías subterráneas</li>
+            <li>Ciclo día / noche con sol, luna y estrellas animadas</li>
+            <li>Postes de alumbrado público georeferenciados</li>
+            <li>Animaciones: gaviotas, velero, auto, peces, humo</li>
+            <li>Tour automático entre vistas predefinidas</li>
+          </ul>
+        </div>
+        <div class="ficha-box">
+          <h4>Datos Técnicos del Simulador</h4>
+          <ul>
+            <li>Motor gráfico: Three.js r160 (WebGL)</li>
+            <li>Geometrías procedurales + ShaderMaterial GLSL</li>
+            <li>Sombras PCFSoft — resolución 2048×2048</li>
+            <li>9 puntos de fuga distribuidos en la red real</li>
+            <li>Transición día/noche con interpolación suave</li>
+            <li>Compatible: Chrome, Firefox, Edge (escritorio)</li>
+          </ul>
+        </div>
+        <div class="ficha-box">
+          <h4>Indicadores del Sistema Hídrico</h4>
+          <ul>
+            <li>Producción diaria estimada: <strong>35 m³/día</strong></li>
+            <li>Presión nominal estanque: <strong>~9.0 bar</strong></li>
+            <li>Presión nominal cabañas: <strong>~6.5 bar</strong></li>
+            <li>Goteo leve: pérdida ~0.5 L/s · 15 s respuesta</li>
+            <li>Fisura media: pérdida ~1.5 L/s · 10 s respuesta</li>
+            <li>Rotura crítica: pérdida ~3.0 L/s · 6 s respuesta</li>
+          </ul>
+        </div>
+      </div>
+      <div class="ficha-placeholder">
+        🖥 Maqueta 3D Interactiva · Complejo Turístico Playa La Virgen\A
+        Disponible en la versión web del proyecto
+      </div>
+    `;
+    const section3d = document.getElementById('section-3d');
+    const topbar = section3d?.querySelector('.viewer-topbar');
+    if (topbar) topbar.after(ficha);
+
+    // ── Mostrar/ocultar bloques según @media print ─────────────────────────
+    // Antes de imprimir: mostrar los bloques extra
+    window.addEventListener('beforeprint', () => {
+      coverData.style.display = 'block';
+      diag.style.display      = 'block';
+      ficha.style.display     = 'block';
+    });
+    // Después de imprimir: ocultarlos de nuevo
+    window.addEventListener('afterprint', () => {
+      coverData.style.display = 'none';
+      diag.style.display      = 'none';
+      ficha.style.display     = 'none';
+    });
+  });
+})();
+</script>
+
+<!-- fecha inyectada por print-prep script arriba -->
+</head>
+
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════════════════════════════ -->
+<header>
+  <div class="header-institution">Equipo de Ingeniería &nbsp;·&nbsp; Proyecto de Innovación &nbsp;·&nbsp; INACAP</div>
+  <h1>Autonomía Hídrica <em>Complejo Turístico Playa La Virgen</em></h1>
+  <p class="header-subtitle">Planta Desalinizadora de Ósmosis Inversa &nbsp;·&nbsp; Red HDPE Sectorizada &nbsp;·&nbsp; Macromedidores Smart Water IoT</p>
+  <div class="header-progress-bar" aria-hidden="true"></div>
+  <div class="header-rule"><span></span><i>◆</i><span></span></div>
+
+  <!-- Hint de exportación — solo visible en pantalla, nunca en impresión -->
+  <div class="header-export-hint" aria-label="Atajos de exportación">
+    <span><kbd>Ctrl+P</kbd> PDF</span>
+    <span class="hint-sep">·</span>
+    <span><kbd>Ctrl+Shift+P</kbd> Captura 3D</span>
+  </div>
+</header>
+
+<!-- ═══════════════════ NAVEGACIÓN ════════════════════════════════════════ -->
+<nav class="nav-tabs" role="navigation" aria-label="Secciones del proyecto">
+  <button class="nav-tab active" id="tab-comic" aria-controls="section-comic">
+    <span class="tab-num">I.</span>Contexto e Implementación
+  </button>
+  <button class="nav-tab" id="tab-3d" aria-controls="section-3d">
+    <span class="tab-num">II.</span>Maqueta 3D Interactiva
+  </button>
+  <button class="nav-tab" id="tab-cdm" aria-controls="section-cdm">
+    <span class="tab-num">III.</span>Matriz de Análisis (CDM)
+  </button>
+</nav>
+
+<!-- ═══════════════════ SECCIÓN 1: CÓMIC ═════════════════════════════════ -->
+<section id="section-comic" class="section active" role="main">
+  <div class="sec-header">
+    <span class="sec-eyebrow">Narrativa del Proyecto · 6 Escenas</span>
+    <h2 class="sec-title">Del Problema a la Solución Hídrica</h2>
+    <div class="sec-rule"></div>
+  </div>
+
+  <div class="inner">
+    <div class="comic-grid">
+
+      <article class="comic-card" aria-label="Escena 00 — El Problema">
+        <div class="comic-tag"><span class="scene-num">00</span><span>El Problema</span></div>
+        <div class="comic-img-wrap">
+          <img src="assets/images/0.jpg" alt="Estanque deteriorado con fugas visibles y camión aljibe AGUA en la zona árida de Playa La Virgen" loading="lazy">
+        </div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Escasez y Fugas Invisibles</h3>
+          <p>El estanque deteriorado pierde agua continuamente mientras camiones aljibe recorren kilómetros para abastecer el complejo. Un modelo insostenible en la zona más árida de Chile.</p>
+        </div>
+      </article>
+
+      <article class="comic-card" aria-label="Escena 01 — Desarrollo">
+        <div class="comic-tag"><span class="scene-num">01</span><span>Desarrollo</span></div>
+        <div class="comic-img-wrap">
+          <img src="assets/images/1.jpg" alt="Trabajadores instalando tubería HDPE en zanja con excavadora, carteles de ingeniería sostenible" loading="lazy">
+        </div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Despliegue de Red HDPE</h3>
+          <p>Equipos de ingeniería instalan tuberías HDPE de alta densidad en zanjas excavadas. Resistencia a la corrosión, larga vida útil e infraestructura 100% sostenible.</p>
+        </div>
+      </article>
+
+      <article class="comic-card" aria-label="Escena 02 — Implementación">
+        <div class="comic-tag"><span class="scene-num">02</span><span>Implementación</span></div>
+        <div class="comic-img-wrap">
+          <img src="assets/images/2.jpg" alt="Planta desalinizadora de ósmosis inversa con producción de 35 m³ por día frente al mar" loading="lazy">
+        </div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Autonomía Hídrica — 35 m³/día</h3>
+          <p>La planta desalinizadora de ósmosis inversa produce 35 m³ de agua limpia diarios directamente del mar. Cero camiones aljibe, cero dependencia externa.</p>
+        </div>
+      </article>
+
+      <article class="comic-card" aria-label="Escena 03 — Tecnología">
+        <div class="comic-tag"><span class="scene-num">03</span><span>Tecnología</span></div>
+        <div class="comic-img-wrap">
+          <img src="assets/images/3.jpg" alt="Macromedidor inteligente ultrasónico y dashboard Smart Water con caudal 125.80 m³/h en tiempo real" loading="lazy">
+        </div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Monitoreo Smart Water</h3>
+          <p>Macromedidores ultrasónicos IoT reportan caudal y presión en tiempo real al dashboard centralizado. Detección instantánea de fugas antes de que se vuelvan críticas.</p>
+        </div>
+      </article>
+
+      <article class="comic-card" aria-label="Escena 04 — La Solución">
+        <div class="comic-tag"><span class="scene-num">04</span><span>La Solución</span></div>
+        <div class="comic-img-wrap">
+          <img src="assets/images/4.jpg" alt="Sistema Autonomía Hídrica completo y operativo con estanque elevado y planta desalinizadora" loading="lazy">
+        </div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Sistema Integrado y Operativo</h3>
+          <p>La solución completa: planta desalinizadora, estanque elevado, red HDPE sectorizada y sensores IoT operando en armonía. Agua segura, producción sostenible, impacto positivo.</p>
+        </div>
+      </article>
+
+      <article class="comic-card" aria-label="Escena 05 — Proyecto Terminado">
+        <div class="comic-tag"><span class="scene-num">05</span><span>Proyecto Terminado</span></div>
+        <div class="comic-img-wrap">
+          <img src="assets/images/5.jpg" alt="Fachada de la planta con logo Autonomía Hídrica iluminada al atardecer, 100% operativa" loading="lazy">
+        </div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Sello de Calidad — 100% Operativo</h3>
+          <p>El complejo luce orgulloso el logo del proyecto iluminado al atardecer. Seguridad total, agua confiable, tecnología inteligente e infraestructura resiliente para las próximas décadas.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SECCIÓN 2: 3D ════════════════════════════════════ -->
+<section id="section-3d" class="section" aria-label="Maqueta 3D interactiva">
+
+  <div class="viewer-topbar">
+    <div>
+      <h2>Maqueta 3D del Sistema Hídrico</h2>
+      <p>Representación interactiva · Arrastra para rotar · Scroll para zoom · <kbd style="font-size:.75em;background:rgba(0,0,0,.08);padding:1px 5px;border-radius:3px;border:1px solid #ccc">?</kbd> para atajos</p>
+    </div>
+
+  </div>
+
+  <div class="viewer-layout">
+
+    <!-- ── SIDEBAR IZQUIERDA: Controles ──────────────────────────────── -->
+    <aside class="sidebar sidebar-left" id="sidebar-left" aria-label="Controles">
+      <button class="sidebar-toggle toggle-left" id="sidebar-left-toggle" title="Mostrar/ocultar panel" aria-expanded="true">
+        <span class="st-icon">◀</span>
+      </button>
+      <div class="sidebar-inner">
+
+        <section class="sb-section">
+          <div class="sb-heading">📷 Vistas</div>
+          <button class="sb-btn sb-active" id="btn-general" title="Vista general (tecla 1)">
+            <span class="sb-icon">⊞</span><span class="sb-label">Vista General</span>
+          </button>
+          <button class="sb-btn" id="btn-plant" title="Planta Desalinizadora (tecla 2)">
+            <span class="sb-icon">◧</span><span class="sb-label">Planta Desalinizadora</span>
+          </button>
+          <button class="sb-btn" id="btn-network" title="Cerro y Estanque (tecla 3)">
+            <span class="sb-icon">⛰</span><span class="sb-label">Cerro y Estanque</span>
+          </button>
+          <button class="sb-btn" id="btn-cabins" title="Zona de Cabañas (tecla 4)">
+            <span class="sb-icon">🏠</span><span class="sb-label">Zona de Cabañas</span>
+          </button>
+          <button class="sb-btn" id="btn-main" title="Casa Principal (tecla 5)">
+            <span class="sb-icon">🏛</span><span class="sb-label">Casa Principal</span>
+          </button>
+        </section>
+
+        <section class="sb-section">
+          <div class="sb-heading">⚙️ Simulación</div>
+          <button class="sb-btn sb-btn-fuga" id="btn-fuga" title="Simular fuga (F)">
+            <span class="sb-icon">🚨</span><span class="sb-label">Simular Fuga</span>
+          </button>
+        </section>
+
+        <section class="sb-section">
+          <div class="sb-heading">🎨 Escena</div>
+          <button class="sb-btn" id="btn-day-night">
+            <span class="sb-icon">🌙</span><span class="sb-label">Modo Noche</span>
+          </button>
+          <button class="sb-btn" id="btn-toggle-pipes">
+            <span class="sb-icon">🔧</span><span class="sb-label">Mostrar Tuberías</span>
+          </button>
+          <button class="sb-btn" id="btn-xray">
+            <span class="sb-icon">🔬</span><span class="sb-label">Radiografía</span>
+          </button>
+          <button class="sb-btn" id="btn-clean-view">
+            <span class="sb-icon">✦</span><span class="sb-label">Vista Limpia</span>
+          </button>
+        </section>
+
+        <section class="sb-section">
+          <div class="sb-heading">🎯 Navegación</div>
+          <button class="sb-btn" id="btn-cam-back">
+            <span class="sb-icon">↩</span><span class="sb-label">Vista Anterior</span>
+          </button>
+          <button class="sb-btn" id="btn-tour">
+            <span class="sb-icon">▶</span><span class="sb-label">Tour Automático</span>
+          </button>
+        </section>
+
+        <section class="sb-section sb-legend">
+          <div class="sb-heading">🗺 Leyenda</div>
+          <div class="sb-legend-item"><span class="sb-swatch" style="background:#4a7c6f"></span>Estanques</div>
+          <div class="sb-legend-item"><span class="sb-swatch" style="background:#ddd8ce;border:1px solid #aaa"></span>Planta Desal.</div>
+          <div class="sb-legend-item"><span class="sb-swatch" style="background:#b8903a"></span>Red HDPE</div>
+          <div class="sb-legend-item"><span class="sb-swatch" style="background:#f0ead8;border:1px solid #c85a3a"></span>Cabañas</div>
+        </section>
+
+      </div>
+    </aside>
+
+    <!-- ── CANVAS ──────────────────────────────────────────────────── -->
+    <div class="canvas-wrap" role="region" aria-label="Maqueta 3D interactiva">
+      <canvas id="three-canvas" aria-label="Maqueta 3D interactiva del complejo Playa La Virgen"></canvas>
+
+      <!-- Alerta de fuga -->
+      <div id="alerta-fuga" role="alert" aria-live="assertive">
+        <div class="alert-icon">⚠️</div>
+        <h3>¡ALERTA DE FUGA!</h3>
+        <p>Pérdida de presión detectada.</p>
+        <p class="alert-severity">Gravedad: <span id="tipo-fuga"></span></p>
+        <div class="alert-progress" aria-hidden="true">
+          <div class="alert-progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- Tooltip inicial -->
+      <div id="canvas-tooltip" role="status">
+        Arrastra · Scroll · Teclas 1–5 · F fuga · ? atajos
+      </div>
+    </div>
+
+    <!-- ── SIDEBAR DERECHA: Datos del sistema ─────────────────────── -->
+    <aside class="sidebar sidebar-right" id="sidebar-right" aria-label="Datos del sistema">
+      <button class="sidebar-toggle toggle-right" id="sidebar-right-toggle" title="Mostrar/ocultar datos" aria-expanded="true">
+        <span class="st-icon">▶</span>
+      </button>
+      <div class="sidebar-inner">
+
+        <!-- Presión del sistema -->
+        <section class="sb-section">
+          <div class="sb-heading">📡 Presión del Sistema</div>
+          <div id="pressure-hud-inner">
+            <div class="ph-row">
+              <span class="ph-name">Estanque</span>
+              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-1" style="width:92%"></div></div>
+              <span class="ph-val" id="ph-val-1">9.2 bar</span>
+            </div>
+            <div class="ph-row">
+              <span class="ph-name">Casa Princ.</span>
+              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-2" style="width:78%"></div></div>
+              <span class="ph-val" id="ph-val-2">7.8 bar</span>
+            </div>
+            <div class="ph-row">
+              <span class="ph-name">Cabañas</span>
+              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-3" style="width:65%"></div></div>
+              <span class="ph-val" id="ph-val-3">6.5 bar</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Pérdida activa (solo durante fuga) -->
+        <section class="sb-section" id="liters-section" style="display:none">
+          <div class="sb-heading">💧 Pérdida Activa</div>
+          <div class="lc-container">
+            <span class="lc-label">Litros perdidos</span>
+            <span id="lc-value" class="lc-value-big">0 L</span>
+          </div>
+        </section>
+
+        <!-- Estadísticas de sesión -->
+        <section class="sb-section" id="session-stats-section" style="display:none">
+          <div class="sb-heading">📊 Estadísticas</div>
+          <div class="ss-row"><span class="ss-label">Total fugas</span><span class="ss-val" id="ss-total">0</span></div>
+          <div class="ss-row"><span class="ss-label">Agua perdida</span><span class="ss-val" id="ss-water">0 L</span></div>
+          <div class="ss-row"><span class="ss-label">Resp. prom.</span><span class="ss-val" id="ss-avgtime">—</span></div>
+          <div class="ss-row"><span class="ss-label">Auto-resueltas</span><span class="ss-val" id="ss-auto">0</span></div>
+        </section>
+
+        <!-- Registro de fugas -->
+        <section class="sb-section">
+          <div class="sb-heading">📋 Registro
+            <span id="lh-count" style="opacity:.5;font-size:.75em;margin-left:.3em">0 eventos</span>
+          </div>
+          <ul id="lh-list" style="list-style:none;padding:0;margin:0">
+            <li class="lh-empty">Sin eventos en esta sesión.</li>
+          </ul>
+        </section>
+
+      </div>
+    </aside>
+
+  </div><!-- /.viewer-layout -->
+</section>
+
+<!-- ═══════════════════ SECCIÓN 3: CDM ═══════════════════════════════════ -->
+<section id="section-cdm" class="section" aria-label="Matriz CDM">
+  <div class="sec-header">
+    <span class="sec-eyebrow">Análisis Estratégico · Región de Atacama · Proyecto de Innovación INACAP</span>
+    <h2 class="sec-title">Matriz de Cualidades, Debilidades y Mejoras</h2>
+    <div class="sec-rule"></div>
+  </div>
+
+  <div class="inner" style="max-width:1200px;margin:0 auto;padding:0 2rem 5rem;">
+    <div class="cdm-grid">
+
+      <!-- Cualidades -->
+      <div class="cdm-card cdm-card--cualidades">
+        <div class="cdm-header">
+          <div class="cdm-icon" aria-hidden="true">✦</div>
+          <h3>Cualidades</h3>
+          <p>Aspectos positivos y fortalezas</p>
+        </div>
+        <ul class="cdm-list">
+          <li>
+            <strong>Autonomía Hídrica</strong>
+            La planta de ósmosis inversa elimina al 100% la dependencia histórica de camiones aljibe, generando <strong>35 m³/día</strong> de agua potable certificada.
+          </li>
+          <li>
+            <strong>Durabilidad Estructural</strong>
+            El uso de tuberías HDPE sectorizadas garantiza resistencia a la corrosión del terreno salino por décadas.
+          </li>
+          <li>
+            <strong>Control en Tiempo Real</strong>
+            Los macromedidores ultrasónicos IoT detectan caídas de presión y micro-fugas en tiempo real, enviando alertas automáticas al panel centralizado Smart Water.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Debilidades -->
+      <div class="cdm-card cdm-card--debilidades">
+        <div class="cdm-header">
+          <div class="cdm-icon" aria-hidden="true">◈</div>
+          <h3>Debilidades</h3>
+          <p>Puntos a considerar y mitigar</p>
+        </div>
+        <ul class="cdm-list">
+          <li>
+            <strong>Dependencia Eléctrica</strong>
+            La planta de ósmosis inversa y los sensores IoT requieren suministro eléctrico continuo. Un corte prolongado detendría la producción de agua.
+          </li>
+          <li>
+            <strong>Mantenimiento Especializado</strong>
+            El sistema de osmosis inversa exige cambio periódico de filtros y personal técnico capacitado en terreno.
+          </li>
+          <li>
+            <strong>Inversión Inicial Elevada</strong>
+            El costo de implementación de la infraestructura completa y sensores inteligentes es alto en su etapa inicial.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Mejoras -->
+      <div class="cdm-card cdm-card--mejoras">
+        <div class="cdm-header">
+          <div class="cdm-icon" aria-hidden="true">◎</div>
+          <h3>Mejoras</h3>
+          <p>Evolución futura del proyecto</p>
+        </div>
+        <ul class="cdm-list">
+          <li>
+            <strong>Energías Renovables</strong>
+            Instalar paneles solares fotovoltaicos para alimentar la planta y los sensores, logrando autonomía energética total y certificación de energía renovable.
+          </li>
+          <li>
+            <strong>App para Huéspedes</strong>
+            Desarrollar una app móvil donde los huéspedes visualicen su consumo en tiempo real, reciban consejos de ahorro y acumulen puntos por uso responsable del agua.
+          </li>
+          <li>
+            <strong>Reutilización de Aguas Grises</strong>
+            Implementar un sistema paralelo de recolección de aguas grises para el riego de las áreas verdes del complejo.
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ════════════════════════════════════════════ -->
+<footer role="contentinfo">
+  <div class="footer-top">
+
+    <div class="footer-brand">
+      <strong>Optimización Hídrica</strong>
+      <span>Complejo Turístico Playa La Virgen</span>
+      <span style="margin-top:.4rem;font-style:normal;font-size:.72rem;opacity:.5;">
+        Planta Desalinizadora · Red HDPE · Macromedidores
+      </span>
+    </div>
+
+    <div class="footer-credits">
+      <div class="footer-credits-label">Integrantes</div>
+      <div class="footer-names">
+        Simón Olivares<br>
+        Julio Sinisterra<br>
+        Millaray Aguirre<br>
+        Renato Borquez<br>
+        Wiljer Mamani
+      </div>
+    </div>
+
+    <div class="footer-professor">
+      <div class="footer-credits-label">Docente</div>
+      <div class="footer-professor-name">Raul Alberto Araya Zepeda</div>
+      <div class="footer-professor-course">Innovación y Emprendimiento</div>
+      <div class="footer-credits-label" style="margin-top:.8rem;">Institución</div>
+      <div class="footer-professor-name" style="font-size:.82rem;">INACAP</div>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <span>Proyecto de Innovación · Ingeniería</span>
+    <span>
+      Complejo Turístico Playa La Virgen
+      <span class="footer-bottom-rule"></span>
+      Maqueta Interactiva 3D
+    </span>
+  </div>
+</footer>
+
+<!-- Audio de alarma -->
+<audio id="sonido-alerta" loop preload="none" aria-hidden="true">
+  <source src="https://www.soundjay.com/misc/sounds/fail-buzzer-03.mp3" type="audio/mpeg">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Scripts -->
+
+<script>
+/* Script único — elimina duplicados de keydown, MutationObserver y sidebar */
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ── Ripple en botones de cámara ─────────────────────────────────────── */
+  document.querySelectorAll('.cam-btn, .sb-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const r = document.createElement('span');
+      r.className = 'ripple';
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      r.style.cssText = `width:${size}px;height:${size}px;`
+        + `left:${e.clientX - rect.left - size/2}px;`
+        + `top:${e.clientY  - rect.top  - size/2}px`;
+      this.appendChild(r);
+      setTimeout(() => r.remove(), 600);
+    });
+  });
+
+  /* ── Sidebar toggles ─────────────────────────────────────────────────── */
+  function makeSidebarToggle(sidebarId, toggleId, openIcon, closedIcon, prefKey) {
+    const sidebar = document.getElementById(sidebarId);
+    const toggle  = document.getElementById(toggleId);
+    if (!sidebar || !toggle) return;
+    const isOpen = sessionStorage.getItem(prefKey) !== 'false';
+    if (!isOpen) sidebar.classList.add('collapsed');
+    toggle.querySelector('.st-icon').textContent = isOpen ? openIcon : closedIcon;
+    toggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      const open = !sidebar.classList.contains('collapsed');
+      sessionStorage.setItem(prefKey, open);
+      toggle.querySelector('.st-icon').textContent = open ? openIcon : closedIcon;
+      toggle.setAttribute('aria-expanded', String(open));
+      window.dispatchEvent(new Event('resize'));
+    });
+  }
+  makeSidebarToggle('sidebar-left',  'sidebar-left-toggle',  '◀', '▶', 'plv_sidebar_left_open');
+  makeSidebarToggle('sidebar-right', 'sidebar-right-toggle', '▶', '◀', 'plv_sidebar_right_open');
+
+  /* ── Marcar botón de vista activo ────────────────────────────────────── */
+  const viewBtnIds = ['btn-general','btn-plant','btn-network','btn-cabins','btn-main'];
+  viewBtnIds.forEach(id => {
+    document.getElementById(id)?.addEventListener('click', () => {
+      viewBtnIds.forEach(v => document.getElementById(v)?.classList.remove('sb-active'));
+      document.getElementById(id)?.classList.add('sb-active');
+    });
+  });
+
+  /* ── Observer crítico de litros (una sola instancia) ─────────────────── */
+  setTimeout(() => {
+    const lc = document.getElementById('lc-value');
+    if (!lc) return;
+    new MutationObserver(() => {
+      const num = parseFloat(lc.textContent);
+      lc.classList.toggle('critical', num > 50);
+    }).observe(lc, { childList: true, characterData: true, subtree: true });
+  }, 3000);
+
+  /* ── Panel de atajos — botón ? ───────────────────────────────────────── */
+  document.getElementById('btn-shortcuts')?.addEventListener('click', () => {
+    const p = document.getElementById('shortcuts-panel');
+    if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
+  });
+
+});
+</script>
+
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>
