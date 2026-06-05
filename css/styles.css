@@ -1,1 +1,2018 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   OPTIMIZACIÓN HÍDRICA · Playa La Virgen
+   styles.css — versión mejorada
+   ═══════════════════════════════════════════════════════════════════════════ */
 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #ede8df;
+  --surface:      #f7f4ef;
+  --surface2:     #f0ece4;
+  --primary:      #1b3d2d;
+  --primary-mid:  #2a5c42;
+  --accent:       #b8903a;
+  --accent-light: #ddb85a;
+  --accent-pale:  #f0dfa8;
+  --text:         #1c1c1c;
+  --text-mid:     #3a3a3a;
+  --text-muted:   #6a6560;
+  --border:       #cfc8bc;
+  --canvas-bg:    #d8d2c6;
+  --alert:        #d32f2f;
+  --alert-dark:   #9a1e1e;
+  --success:      #2e7d32;
+  --shadow-sm:    0 2px 8px rgba(0,0,0,.08);
+  --shadow-md:    0 6px 24px rgba(0,0,0,.13);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,.18);
+  --radius:       4px;
+  --transition:   0.25s ease;
+}
+
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.72;
+  min-height: 100vh;
+}
+
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+header {
+  background: var(--primary);
+  color: #fff;
+  padding: 3.2rem 2rem 2.6rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 4px solid var(--accent);
+}
+/* Textura sutil de fondo */
+header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 20% 50%, rgba(184,144,58,.08) 0%, transparent 60%),
+                    radial-gradient(circle at 80% 20%, rgba(255,255,255,.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+.header-institution {
+  display: inline-flex;
+  gap: 0.7rem;
+  border: 1px solid rgba(184,144,58,.5);
+  color: var(--accent-light);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.35rem 1.1rem;
+  margin-bottom: 1.4rem;
+}
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.75rem, 4vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1.18;
+}
+header h1 em { display: block; color: var(--accent-light); font-style: normal; }
+.header-subtitle {
+  margin-top: 0.9rem;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,.65);
+  font-style: italic;
+}
+.header-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1.4rem;
+  opacity: 0.4;
+}
+.header-rule span { flex: 0 1 80px; height: 1px; background: var(--accent-light); }
+.header-rule i { color: var(--accent-light); font-style: normal; font-size: 0.75rem; }
+
+/* ─── Navegación ───────────────────────────────────────────────────────────── */
+.nav-tabs {
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: var(--shadow-sm);
+}
+.nav-tab {
+  padding: 1.05rem 2.8rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 3px solid transparent;
+  transition: color var(--transition), border-color var(--transition);
+}
+.nav-tab:hover { color: var(--primary-mid); }
+.nav-tab.active { color: var(--primary); border-bottom-color: var(--accent); }
+.tab-num {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: var(--accent);
+  margin-right: 0.5em;
+  font-size: 0.9em;
+}
+
+/* ─── Secciones ────────────────────────────────────────────────────────────── */
+.section { display: none; animation: fadeUp .4s ease both; }
+.section.active { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Cabecera de sección ──────────────────────────────────────────────────── */
+.sec-header { text-align: center; padding: 3.5rem 2rem 2.8rem; }
+.sec-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.3rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+.sec-rule {
+  width: 60px;
+  height: 2px;
+  background: var(--accent);
+  margin: 1.2rem auto 0;
+}
+
+/* ─── Cómic grid ───────────────────────────────────────────────────────────── */
+#section-comic .inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem 5rem;
+}
+.comic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  justify-content: center;
+}
+.comic-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.comic-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+.comic-tag {
+  background: var(--primary);
+  color: var(--accent-light);
+  font-family: 'Playfair Display', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.1rem;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+.scene-num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.5;
+}
+.comic-img-wrap {
+  width: 100%;
+  background: var(--canvas-bg);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  /* Sin aspect-ratio fijo: la imagen dicta su propia altura */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comic-img-wrap img {
+  width: 100%;
+  height: auto;           /* respeta proporciones reales de cada imagen */
+  display: block;
+  object-fit: contain;    /* nunca recorta, siempre se ve completa */
+  transition: transform .5s ease;
+}
+.comic-card:hover .comic-img-wrap img { transform: scale(1.03); }
+.comic-body { padding: 1.6rem 1.5rem; flex: 1; }
+.comic-scene-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.12rem;
+  color: var(--primary);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* ─── Viewer 3D ────────────────────────────────────────────────────────────── */
+.viewer-topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1.3rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.viewer-topbar h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: var(--primary);
+}
+.viewer-topbar p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+.legend {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.legend-item { display: flex; align-items: center; gap: 0.4rem; }
+.legend-swatch { width: 13px; height: 13px; border-radius: 2px; flex-shrink: 0; }
+
+/* ─── Canvas wrap ──────────────────────────────────────────────────────────── */
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 200px);
+  min-height: 520px;
+  background: var(--canvas-bg);
+  overflow: hidden;
+}
+#three-canvas { width: 100%; height: 100%; display: block; }
+
+/* ─── Tooltip canvas ───────────────────────────────────────────────────────── */
+#canvas-tooltip {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(27,61,45,.75);
+  color: rgba(255,255,255,.75);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+#canvas-tooltip.hidden { opacity: 0; }
+
+/* ─── Panel de cámara ──────────────────────────────────────────────────────── */
+.cam-panel {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  z-index: 10;
+}
+.cam-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-family: 'Playfair Display', serif;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 195px;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition), color var(--transition), transform 0.1s;
+}
+.cam-btn:hover { background: var(--surface2); transform: translateX(-2px); }
+.cam-btn.active { background: var(--primary); color: var(--accent-light); }
+.cam-icon { font-size: 1rem; line-height: 1; }
+
+.btn-fuga {
+  border-color: var(--alert);
+  color: var(--alert);
+  margin-top: 15px;
+  position: relative;
+  overflow: hidden;
+}
+.btn-fuga::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--alert);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+  z-index: -1;
+}
+.btn-fuga:hover { color: #fff; }
+.btn-fuga:hover::before { transform: scaleX(1); }
+
+/* Estado activo del botón mientras hay fuga */
+.btn-fuga.fuga-activa {
+  background: var(--alert);
+  color: #fff;
+  border-color: var(--alert-dark);
+  animation: pulseBtn 2s infinite;
+}
+@keyframes pulseBtn {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(211,47,47,.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(211,47,47,0); }
+}
+
+/* ─── Alerta de fuga ───────────────────────────────────────────────────────── */
+/*
+   SOLUCIÓN AL BUG: no se puede animar "left: auto" ni mezclar
+   translate(-50%,-50%) con scale() en la misma propiedad transform.
+   Estrategia: la alerta siempre vive en top/left fijos (esquina sup-der)
+   y usamos translate() para moverla al centro o dejarla en su sitio.
+   Solo animamos `transform` — 100% animable, sin conflictos.
+*/
+#alerta-fuga {
+  display: none;
+  position: absolute;
+
+  /* Siempre en esquina superior derecha — NUNCA en el centro */
+  top: 3rem;
+  right: 1.2rem;
+  left: auto;
+
+  transform: scale(1);
+  transition: opacity 0.4s ease, transform 0.3s ease;
+
+  background: linear-gradient(135deg, rgba(180,20,20,.97), rgba(120,10,10,.97));
+  color: #fff;
+  padding: 0.9rem 1.2rem 0.8rem;
+  border-radius: var(--radius);
+  font-family: 'Playfair Display', serif;
+  text-align: center;
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(211,47,47,.4);
+  z-index: 100;
+  width: 240px;
+  border: 1px solid rgba(255,255,255,.15);
+  animation: pulseAlert 1.5s ease-in-out infinite;
+}
+
+.alert-icon { font-size: 2rem; line-height: 1; margin-bottom: 0.4rem; }
+#alerta-fuga h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+#alerta-fuga p { font-size: 0.88rem; opacity: 0.9; }
+.alert-severity {
+  margin-top: 0.5rem !important;
+  font-weight: 600;
+  font-size: 0.82rem !important;
+  background: rgba(0,0,0,.2);
+  padding: 0.25rem 0.6rem;
+  border-radius: 2px;
+}
+
+/* Barra de progreso */
+.alert-progress {
+  margin-top: 0.8rem;
+  height: 3px;
+  background: rgba(255,255,255,.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.alert-progress-bar {
+  height: 100%;
+  width: 100%;
+  background: rgba(255,255,255,.7);
+  transform-origin: left;
+  animation: progressDrain 15s linear forwards;
+}
+
+/* Keyframes del pulso */
+@keyframes pulseAlert {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.03); }
+}
+@keyframes progressDrain {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* .esquina: panel en esquina, animación detenida */
+#alerta-fuga.esquina {
+  transform: scale(0.9);
+  animation: none;
+}
+
+/* .resuelto: verde, esquina */
+#alerta-fuga.resuelto {
+  background: linear-gradient(135deg, rgba(30,100,40,.97), rgba(20,70,30,.97));
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(46,125,50,.4);
+  transform: scale(1);
+  animation: none;
+}
+
+/* ─── Timer badge (tiempo de fuga activa) ──────────────────────────────────── */
+#leak-timer-badge {
+  position: absolute;
+  bottom: 75px; /* encima de btnPipe (bottom:20px + ~45px alto) */
+  right: 1.2rem;
+  background: rgba(211,47,47,.9);
+  color: #fff;
+  font-family: 'Crimson Pro', monospace, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+  transition: opacity 0.4s ease;
+}
+
+/* ─── Panel historial de fugas ─────────────────────────────────────────────── */
+#leak-history-panel {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 1.2rem;
+  width: 260px;
+  max-height: 220px;
+  background: rgba(27,61,45,.92);
+  border: 1px solid rgba(184,144,58,.3);
+  color: #fff;
+  border-radius: var(--radius);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  overflow: hidden;
+  z-index: 10;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+}
+.lh-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  font-family: 'Playfair Display', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--accent-light);
+  background: rgba(0,0,0,.15);
+  flex-shrink: 0;
+}
+#lh-count { font-size: 0.7rem; opacity: 0.7; }
+#lh-list {
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+  padding: 0.3rem 0;
+}
+#lh-list::-webkit-scrollbar { width: 4px; }
+#lh-list::-webkit-scrollbar-track { background: transparent; }
+#lh-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 2px; }
+.lh-empty { padding: 0.6rem 0.9rem; color: rgba(255,255,255,.4); font-style: italic; }
+.lh-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.42rem 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  animation: fadeUp 0.3s ease both;
+}
+.lh-item.auto  { border-left: 2px solid #66bb6a; }
+.lh-item.manual { border-left: 2px solid #ef5350; }
+.lh-idx  { color: var(--accent-light); font-size: 0.7rem; min-width: 20px; }
+.lh-tipo { flex: 1; font-size: 0.8rem; line-height: 1.3; }
+.lh-dur  { font-size: 0.7rem; color: rgba(255,255,255,.5); white-space: nowrap; }
+
+/* ─── Footer académico ─────────────────────────────────────────────────────── */
+footer {
+  background: var(--primary);
+  color: rgba(255,255,255,.55);
+  border-top: 3px solid var(--accent);
+  padding: 0;
+  font-size: 0.86rem;
+}
+
+/* Franja superior: créditos del proyecto */
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2.4rem 3rem 2rem;
+  border-bottom: 1px solid rgba(184,144,58,.2);
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.footer-brand strong {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255,255,255,.9);
+  letter-spacing: 0.03em;
+}
+.footer-brand span {
+  font-size: 0.78rem;
+  color: var(--accent-light);
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* Bloque de integrantes */
+.footer-credits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: right;
+}
+.footer-credits-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  opacity: 0.7;
+  margin-bottom: 0.1rem;
+}
+.footer-names {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,.8);
+  line-height: 1.65;
+}
+.footer-names em {
+  font-style: normal;
+  color: rgba(255,255,255,.45);
+  font-size: 0.78rem;
+}
+
+/* Bloque del profesor */
+.footer-professor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.footer-professor .footer-credits-label { text-align: left; }
+.footer-professor-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,.85);
+  font-weight: 600;
+}
+.footer-professor-course {
+  font-size: 0.78rem;
+  color: var(--accent-light);
+  opacity: 0.75;
+  font-style: italic;
+}
+
+/* Franja inferior: copyright mínimo */
+.footer-bottom {
+  padding: 0.9rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,.3);
+  letter-spacing: 0.08em;
+}
+.footer-bottom-rule {
+  width: 1px;
+  height: 12px;
+  background: rgba(255,255,255,.2);
+  display: inline-block;
+  margin: 0 0.6rem;
+  vertical-align: middle;
+}
+
+@media (max-width: 700px) {
+  .footer-top { flex-direction: column; padding: 2rem 1.5rem 1.6rem; }
+  .footer-credits { text-align: left; }
+  .footer-bottom { padding: 0.9rem 1.5rem; flex-direction: column; align-items: flex-start; }
+}
+
+
+/* ─── Matriz CDM ────────────────────────────────────────────────────────────── */
+.cdm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.cdm-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform .3s ease, box-shadow .3s ease;
+  display: flex;
+  flex-direction: column;
+}
+.cdm-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Cabeceras con color propio por columna */
+.cdm-header {
+  padding: 2rem 1.8rem 1.6rem;
+  text-align: center;
+  position: relative;
+}
+.cdm-card--cualidades  .cdm-header { background: var(--primary); }
+.cdm-card--debilidades .cdm-header { background: #6b5230; }
+.cdm-card--mejoras     .cdm-header { background: #3a6b4a; }
+
+.cdm-icon {
+  font-size: 1.6rem;
+  color: var(--accent-light);
+  opacity: 0.6;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+.cdm-header h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.3rem;
+}
+.cdm-header p {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  opacity: 0.8;
+}
+
+/* Lista de ítems */
+.cdm-list {
+  list-style: none;
+  padding: 1.6rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+.cdm-list li {
+  position: relative;
+  padding-left: 1.4rem;
+  font-size: 0.93rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+}
+.cdm-list li::before {
+  content: '■';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  font-size: 0.5rem;
+  color: var(--accent);
+}
+.cdm-list strong {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 0.15rem;
+}
+
+/* ─── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .nav-tab { padding: 0.9rem 1.2rem; font-size: 0.82rem; }
+  .viewer-topbar { flex-direction: column; align-items: flex-start; }
+  .legend { gap: 0.7rem; }
+  .cam-panel { top: auto; bottom: 3.5rem; right: 0.7rem; }
+  .cam-btn { min-width: 160px; font-size: 0.82rem; padding: 0.55rem 0.8rem; }
+  #leak-history-panel { display: none; } /* ocultar en móvil para no saturar */
+  #alerta-fuga.esquina { right: 10px; top: 10px; transform: scale(0.8); }
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+   NUEVAS SECCIONES — Cursor, Litros, Pantalla de carga, Tooltips avanzados
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Cursor del canvas: grab para rotar, grabbing al arrastrar ────────────── */
+#three-canvas          { cursor: grab; }
+#three-canvas:active   { cursor: grabbing; }
+
+/* ─── Contador de litros perdidos ─────────────────────────────────────────── */
+#liters-counter {
+  position: absolute;
+  top: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(10, 30, 60, 0.88);
+  border: 1px solid rgba(68, 170, 238, 0.5);
+  border-radius: 30px;
+  padding: 0.45rem 1.2rem;
+  font-family: 'Crimson Pro', monospace, serif;
+  color: #fff;
+  z-index: 50;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 18px rgba(68, 170, 238, 0.25);
+  animation: litersAppear 0.4s ease both;
+}
+
+@keyframes litersAppear {
+  from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.lc-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(68, 170, 238, 0.85);
+  white-space: nowrap;
+}
+
+#lc-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  min-width: 72px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  transition: color 0.3s;
+}
+
+/* Cuando lleva más de ~50L el número se pone rojo */
+#lc-value.critical { color: #ff6b6b; text-shadow: 0 0 8px rgba(255,80,80,0.5); }
+
+/* ─── Pantalla de carga (splash) al iniciar la maqueta 3D ─────────────────── */
+#scene-loading {
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  z-index: 200;
+  transition: opacity 0.6s ease;
+}
+#scene-loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.loading-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--accent-light);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.loading-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(184, 144, 58, 0.25);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ─── Estadísticas de sesión (mini-panel sobre historial) ─────────────────── */
+#session-stats {
+  position: absolute;
+  bottom: calc(1.2rem + 260px); /* arriba del historial (260px = altura max del historial) */
+  left: 1.2rem;
+  width: 260px;
+  background: rgba(10, 25, 45, 0.88);
+  border: 1px solid rgba(184, 144, 58, 0.25);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.9rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  box-shadow: var(--shadow-md);
+}
+#session-stats .ss-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  margin-bottom: 0.55rem;
+  opacity: 0.8;
+}
+.ss-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ss-row:last-child { border-bottom: none; }
+.ss-label { opacity: 0.6; }
+.ss-val {
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Tooltip de coordenadas al hacer hover sobre el canvas ───────────────── */
+#coord-tooltip {
+  position: absolute;
+  background: rgba(27, 61, 45, 0.85);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Crimson Pro', monospace, serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 3px;
+  pointer-events: none;
+  display: none;
+  z-index: 30;
+  border: 1px solid rgba(184,144,58,0.3);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
+/* ─── Indicador de modo día/noche en el canvas ────────────────────────────── */
+#day-night-indicator {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  z-index: 10;
+  transition: background 0.8s ease, color 0.8s ease;
+  pointer-events: none;
+}
+#day-night-indicator.night {
+  background: rgba(10,14,26,0.75);
+  color: rgba(200,215,255,0.75);
+  border-color: rgba(180,200,255,0.2);
+}
+
+/* ─── Mejorar legibilidad del panel de historial con scroll suave ──────────── */
+#lh-list { scroll-behavior: smooth; }
+
+/* ─── Pulso del historial cuando llega un nuevo evento ────────────────────── */
+@keyframes newEvent {
+  0%   { background: rgba(184,144,58,0.18); }
+  100% { background: transparent; }
+}
+.lh-item:first-child { animation: fadeUp 0.3s ease both, newEvent 1.2s ease 0.3s both; }
+
+/* ─── Efecto hover mejorado en botones de cámara ──────────────────────────── */
+.cam-btn {
+  position: relative;
+  overflow: hidden;
+}
+.cam-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.cam-btn:hover::after { opacity: 0.07; }
+
+/* ─── Scrollbar global personalizada ──────────────────────────────────────── */
+::-webkit-scrollbar       { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+  border: 1px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ─── Selección de texto con colores del proyecto ─────────────────────────── */
+::selection { background: var(--accent); color: #fff; }
+
+/* ─── Animación de entrada para las tarjetas del cómic (stagger) ───────────── */
+.comic-card:nth-child(1) { animation-delay: 0.05s; }
+.comic-card:nth-child(2) { animation-delay: 0.12s; }
+.comic-card:nth-child(3) { animation-delay: 0.19s; }
+.comic-card:nth-child(4) { animation-delay: 0.26s; }
+.comic-card:nth-child(5) { animation-delay: 0.33s; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.comic-card { animation: cardIn 0.5s ease both; }
+
+/* ─── Modo oscuro del sistema (respeta preferencia del OS) ────────────────── */
+@media (prefers-color-scheme: dark) {
+  /* Solo aplicamos cambios sutiles para no romper el tema del proyecto */
+  :root {
+    --bg:       #1a1814;
+    --surface:  #231f1a;
+    --surface2: #2a2520;
+    --border:   #3a342c;
+    --text:     #ede8df;
+    --text-mid: #c8c0b0;
+    --text-muted: #8a8278;
+    --canvas-bg: #1e1b16;
+  }
+}
+
+/* ─── Print: reglas base (el sistema completo vive en el <style> del index.html) */
+@media print {
+  /* Solo aseguramos que las fuentes y colores sean correctos */
+  body { font-family: 'Crimson Pro', Georgia, serif !important; }
+  .header-export-hint, .nav-tabs,
+  audio, #btn-shortcuts, #cam-minimap,
+  #shortcut-panel, #canvas-tooltip,
+  #three-loader, #onboarding-toast,
+  #session-stats-hud, #liters-lost-hud,
+  .sidebar-toggle { display: none !important; }
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+   IDEAS NUEVAS — Panel de Presión, HUD Radiografía, Muelle
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Panel de Presión (ahora en sidebar derecha, no flotante) ──────────── */
+#pressure-hud { display: none !important; }  /* legacy, replaced by sidebar */
+.ph-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4ab0e0;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+.ph-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.18rem 0;
+  font-size: 0.72rem;
+}
+.ph-row > span:first-child {
+  width: 72px;
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.6);
+}
+.ph-bar-wrap {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.ph-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2a8fc0, #4ab0e0);
+  border-radius: 3px;
+  transition: width 0.6s ease, background 0.4s ease;
+}
+.ph-row > span:last-child {
+  width: 58px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+/* ─── Botón Radiografía ───────────────────────────────────────────────────── */
+#btn-xray {
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+#btn-xray:hover {
+  box-shadow: 0 0 12px rgba(74, 176, 224, 0.45);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PANEL DE EMERGENCIA v3.0
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#emergency-panel {
+  position: absolute;
+  top: 3rem;       /* debajo del indicador día/noche */
+  left: 1.2rem;
+  transform: none;
+  width: 270px;
+  background: rgba(8, 12, 24, 0.96);
+  border: 2px solid #dd2200;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: 'Crimson Pro', monospace, serif;
+  z-index: 60;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 40px rgba(220,40,0,0.35), 0 8px 32px rgba(0,0,0,0.6);
+  animation: emergencyAppear 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+  pointer-events: none;
+}
+
+@keyframes emergencyAppear {
+  from { opacity:0; transform: translateX(-12px) scale(0.92); }
+  to   { opacity:1; transform: translateX(0) scale(1); }
+}
+
+#ep-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 1rem;
+  background: #b86200;
+  transition: background 0.6s ease;
+}
+
+#ep-badge {
+  font-size: 1.1rem;
+  animation: epBadgePulse 0.7s ease infinite alternate;
+}
+
+@keyframes epBadgePulse {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0.6; transform: scale(1.2); }
+}
+
+#ep-phase {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+#ep-detail {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  min-height: 2rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.4s ease;
+}
+
+#ep-bars {
+  padding: 0.55rem 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.ep-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.ep-bar-row > span { width: 60px; flex-shrink: 0; }
+
+.ep-bar-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ep-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease, background 0.4s ease;
+}
+
+.ep-response {
+  background: linear-gradient(90deg, #2a7d3a, #4ab06a) !important;
+}
+
+#ep-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  font-size: 0.72rem;
+}
+
+#ep-sector {
+  color: rgba(255,200,100,0.7);
+  letter-spacing: 0.05em;
+}
+
+#ep-litros {
+  font-weight: 700;
+  color: #55ccff;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  animation: litersFlash 1s ease infinite alternate;
+}
+
+@keyframes litersFlash {
+  from { opacity: 1; }
+  to   { opacity: 0.65; }
+}
+
+/* Scanline retro para darle drama al panel */
+#emergency-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(255,255,255,0.012) 3px,
+    rgba(255,255,255,0.012) 4px
+  );
+  pointer-events: none;
+}
+/* ─── Pressure HUD — barras de alerta durante fuga ──────────────────────── */
+.ph-bar[style*="background: rgb(204, 34, 34)"],
+.ph-bar[style*="background:#cc2222"] {
+  animation: pressurePulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes pressurePulse {
+  from { filter: brightness(1);   }
+  to   { filter: brightness(1.4); }
+}
+
+/* Indicador día/noche mejorado */
+#day-night-indicator {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(27,61,45,.80);
+  color: var(--accent-light);
+  font-family: 'Playfair Display', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  border: 1px solid rgba(184,144,58,.35);
+  z-index: 10;
+  transition: background 0.8s ease, color 0.8s ease;
+  pointer-events: none;
+}
+#day-night-indicator.night {
+  background: rgba(8,12,30,.85);
+  color: #aabbff;
+  border-color: rgba(100,120,220,.4);
+}
+
+/* Session stats */
+#session-stats {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(27,61,45,.75);
+  color: rgba(255,255,255,.75);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.78rem;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(184,144,58,.25);
+  z-index: 10;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ─── Minimap ────────────────────────────────────────────────────────────── */
+#cam-minimap {
+  transition: opacity 0.3s ease;
+}
+#cam-minimap:hover { opacity: 0.5; }
+
+/* ─── Panel de atajos ────────────────────────────────────────────────────── */
+#btn-shortcuts {
+  font-family: 'Playfair Display', serif;
+}
+#shortcut-panel kbd {
+  display: inline-block;
+  background: rgba(184,144,58,.2);
+  border: 1px solid rgba(184,144,58,.4);
+  border-radius: 3px;
+  padding: 0 5px;
+  font-size: 0.75rem;
+  min-width: 22px;
+  text-align: center;
+  margin-right: 6px;
+  color: #ddb85a;
+  font-family: monospace;
+}
+
+/* ─── Toast de vista (label) ──────────────────────────────────────────────── */
+#cam-view-label {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─── Botones extra del panel ─────────────────────────────────────────────── */
+#btn-cam-back,
+#btn-tour {
+  font-size: 0.82rem;
+}
+#btn-tour.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ─── Loading screen ──────────────────────────────────────────────────────── */
+#three-loader {
+  pointer-events: none;
+}
+
+/* ─── Hint de exportación en el header ──────────────────────────────────── */
+.header-export-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+  font-size: 0.70rem;
+  letter-spacing: 0.10em;
+  color: rgba(255,255,255,.35);
+  font-family: 'Crimson Pro', serif;
+}
+.header-export-hint kbd {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 0.68rem;
+  color: var(--accent-light);
+  font-family: monospace;
+  letter-spacing: 0;
+}
+.hint-sep { opacity: .4; }
+
+/* Ocultar el hint al imprimir */
+@media print {
+  .header-export-hint { display: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MEJORAS 11-20 — CSS adicional
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* MEJORA 11 — Barra de progreso animada en el header */
+.header-progress-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--accent));
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* MEJORA 12 — Panel de presión mejorado visualmente */
+#pressure-hud {
+  background: rgba(10, 25, 45, 0.90) !important;
+  border: 1px solid rgba(68, 170, 238, 0.30) !important;
+  border-radius: 8px !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 0 20px rgba(68,170,238,0.12), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+.ph-bar-wrap {
+  flex: 1;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.ph-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #1a6688, #44aaee);
+  transition: width 0.4s ease, background 0.3s;
+  position: relative;
+}
+/* Brillo deslizante sobre la barra */
+.ph-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -40%; width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: barShine 2s ease infinite;
+}
+@keyframes barShine {
+  0%   { left: -40%; }
+  100% { left: 140%; }
+}
+
+/* MEJORA 13 — Leyenda mejorada con animación al hover */
+.legend-item {
+  transition: transform var(--transition), opacity var(--transition);
+  cursor: default;
+}
+.legend-item:hover { transform: translateY(-2px); opacity: 0.85; }
+.legend-swatch {
+  transition: box-shadow var(--transition);
+}
+.legend-item:hover .legend-swatch {
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* MEJORA 14 — Botones de cámara con ripple al hacer click */
+.cam-btn {
+  position: relative;
+  overflow: hidden;
+}
+.cam-btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transform: scale(0);
+  animation: rippleAnim 0.5s linear;
+  pointer-events: none;
+}
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* MEJORA 15 — Tarjeta de datos en tiempo real (estadísticas de sesión) */
+#session-stats {
+  border-left: 3px solid var(--accent) !important;
+}
+.ss-val { color: var(--accent-light) !important; }
+.ss-row:hover { background: rgba(184,144,58,0.06); border-radius: 3px; }
+
+/* MEJORA 16 — Historial de fugas con animación de entrada */
+@keyframes slideInLeft {
+  from { opacity:0; transform: translateX(-12px); }
+  to   { opacity:1; transform: translateX(0); }
+}
+.lh-item { animation: slideInLeft 0.3s ease both; }
+
+/* MEJORA 17 — Nav tabs con indicador de punto activo */
+.nav-tab {
+  position: relative;
+  transition: color var(--transition), border-color var(--transition);
+}
+.nav-tab.active::before {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: dotPulse 2s ease infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity:1; }
+  50%       { transform: translateX(-50%) scale(1.6); opacity:0.6; }
+}
+
+/* MEJORA 18 — Footer con gradiente superior sutil */
+footer {
+  position: relative;
+}
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+/* MEJORA 19 — Comic cards con borde inferior dorado en hover */
+.comic-card {
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.comic-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.comic-card:hover::after { opacity: 1; }
+
+/* MEJORA 20 — Indicador de carga de la maqueta 3D más elegante */
+.viewer-topbar {
+  position: relative;
+}
+.viewer-topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* Panel de presión mejorado — filas */
+.ph-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+}
+.ph-row span:first-child { min-width: 72px; font-size: 0.7rem; opacity: 0.8; }
+.ph-row span:last-child  { min-width: 54px; text-align:right; font-variant-numeric:tabular-nums; font-size:0.7rem; }
+.ph-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(68,170,238,0.85);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(68,170,238,0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DUAL SIDEBAR LAYOUT — Izquierda: controles · Derecha: datos
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Layout contenedor del viewer */
+.viewer-layout {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 200px);
+  min-height: 520px;
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas-bg);
+}
+
+/* Canvas ocupa todo el espacio restante */
+.viewer-layout .canvas-wrap {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: unset;
+  width: auto;
+  position: relative;
+}
+
+/* ── Base sidebar ─────────────────────────────────────────────────────── */
+.sidebar {
+  flex: 0 0 210px;
+  width: 210px;
+  height: 100%;
+  background: rgba(15, 30, 22, 0.97);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 20;
+  transition: width 0.28s cubic-bezier(.4,0,.2,1),
+              flex-basis 0.28s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+.sidebar-left  { border-right: 1px solid rgba(184, 144, 58, 0.25); }
+.sidebar-right { border-left:  1px solid rgba(184, 144, 58, 0.25); }
+
+.sidebar.collapsed {
+  width: 0;
+  flex-basis: 0;
+  border-color: transparent;
+}
+
+/* ── Toggle tabs ─────────────────────────────────────────────────────── */
+.sidebar-toggle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 56px;
+  background: rgba(15, 30, 22, 0.97);
+  border: 1px solid rgba(184, 144, 58, 0.3);
+  color: rgba(184, 144, 58, 0.85);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  z-index: 25;
+  transition: background 0.2s, color 0.2s;
+}
+.sidebar-toggle:hover { background: rgba(27, 61, 45, 1); color: #ddb85a; }
+
+/* Left sidebar toggle sticks out on the right */
+.toggle-left {
+  right: -26px;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+}
+/* Right sidebar toggle sticks out on the left */
+.toggle-right {
+  left: -26px;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+}
+
+/* Scrollable inner content */
+.sidebar-inner {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.6rem 0 1rem;
+  width: 210px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(184,144,58,.25) transparent;
+}
+.sidebar-inner::-webkit-scrollbar { width: 4px; }
+.sidebar-inner::-webkit-scrollbar-thumb { background: rgba(184,144,58,.25); border-radius: 2px; }
+
+/* ── Right sidebar data styles ───────────────────────────────────────── */
+#pressure-hud-inner { padding: 0.2rem 0; }
+.ph-name {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.65);
+  white-space: nowrap;
+  width: 68px;
+  flex-shrink: 0;
+}
+.ph-val {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #fff;
+  width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* Liters in sidebar */
+.lc-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0;
+  gap: 0.25rem;
+}
+.lc-value-big {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #44aaee;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.lc-value-big.critical { color: #ff6b6b; }
+
+/* History list in sidebar — compact */
+#lh-list {
+  max-height: 180px;
+  overflow-y: auto;
+  margin-top: 0.3rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(184,144,58,.2) transparent;
+}
+
+/* ── Sections ──────────────────────────────────────────────────────────── */
+.sb-section {
+  padding: 0.5rem 0.6rem 0.6rem;
+  border-bottom: 1px solid rgba(184, 144, 58, 0.1);
+}
+.sb-section:last-child { border-bottom: none; }
+
+.sb-heading {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(184, 144, 58, 0.65);
+  padding: 0.1rem 0.3rem 0.5rem;
+  user-select: none;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+.sb-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.52rem 0.75rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: rgba(240, 234, 216, 0.8);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  text-align: left;
+  margin-bottom: 2px;
+}
+.sb-btn:hover {
+  background: rgba(184, 144, 58, 0.12);
+  color: #f0ead8;
+  border-color: rgba(184, 144, 58, 0.2);
+}
+.sb-btn.sb-active {
+  background: rgba(27, 61, 45, 0.9);
+  color: #ddb85a;
+  border-color: rgba(184, 144, 58, 0.4);
+}
+.sb-icon {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+.sb-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Fuga button special style */
+.sb-btn-fuga {
+  color: #ff6644 !important;
+  border-color: rgba(255, 80, 40, 0.25) !important;
+  margin-top: 2px;
+}
+.sb-btn-fuga:hover {
+  background: rgba(255, 80, 40, 0.15) !important;
+  border-color: rgba(255, 80, 40, 0.5) !important;
+  color: #ff8866 !important;
+}
+.sb-btn-fuga.fuga-activa {
+  background: rgba(220, 40, 20, 0.3) !important;
+  color: #ffaa88 !important;
+  border-color: #dd4422 !important;
+  animation: fugazPulse 1.4s ease-in-out infinite;
+}
+@keyframes fugazPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,40,20,0); }
+  50%       { box-shadow: 0 0 0 4px rgba(220,40,20,0.25); }
+}
+
+/* ── Legend items ──────────────────────────────────────────────────────── */
+.sb-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: rgba(240, 234, 216, 0.65);
+  padding: 0.25rem 0.3rem;
+}
+.sb-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* ── Session stats — in right sidebar, display:none until first event ───── */
+#session-stats { display: none !important; }  /* legacy floating version */
+#session-stats-section { transition: opacity 0.3s ease; }
+
+/* ── Day-night indicator: smaller, top-left corner ─────────────────────── */
+#day-night-indicator {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  font-size: 0.72rem;
+  background: rgba(15, 30, 22, 0.75);
+  color: rgba(240, 234, 216, 0.75);
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Hide old cam-panel if somehow it still renders */
+.cam-panel { display: none !important; }
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  /* Hide right sidebar on medium screens to save space */
+  .sidebar-right { display: none; }
+}
+@media (max-width: 600px) {
+  .sidebar { flex-basis: 170px; width: 170px; }
+  .sidebar-inner { width: 170px; }
+  .sb-btn { font-size: 0.82rem; padding: 0.45rem 0.6rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEJORA 13 — Panel de litros perdidos
+   ═══════════════════════════════════════════════════════════════════════ */
+#liters-lost-hud {
+  animation: literspulse 1.2s ease-in-out infinite;
+  transition: opacity 0.4s ease;
+}
+@keyframes literspulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,30,30,.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(200,30,30,0); }
+}
+#liters-count {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEJORA 14 — Panel de estadísticas de sesión
+   ═══════════════════════════════════════════════════════════════════════ */
+#session-stats-hud {
+  transition: opacity 0.4s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEJORA 15 — Cursor personalizado en el canvas (gota de agua)
+   ═══════════════════════════════════════════════════════════════════════ */
+#three-canvas {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 C12 2 5 10 5 15 a7 7 0 0 0 14 0 C19 10 12 2 12 2z' fill='%231a8acc' opacity='0.85'/%3E%3C/svg%3E") 12 22, crosshair;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEJORA 16 — Scroll suave en toda la página
+   ═══════════════════════════════════════════════════════════════════════ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEJORA 17 — Animación de entrada para las tarjetas CDM
+   ═══════════════════════════════════════════════════════════════════════ */
+.cdm-card {
+  animation: cardSlideUp 0.5s ease both;
+}
+.cdm-card:nth-child(1) { animation-delay: 0.05s; }
+.cdm-card:nth-child(2) { animation-delay: 0.15s; }
+.cdm-card:nth-child(3) { animation-delay: 0.25s; }
+@keyframes cardSlideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEJORA 18 — Borde izquierdo de color en las tarjetas del historial
+   según gravedad
+   ═══════════════════════════════════════════════════════════════════════ */
+.lh-item.auto   { border-left: 3px solid #66bb6a; }
+.lh-item.manual { border-left: 3px solid #ef5350; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEJORA 19 — Estilo mejorado para kbd en toda la UI
+   ═══════════════════════════════════════════════════════════════════════ */
+kbd {
+  display: inline-block;
+  background: rgba(0,0,0,.07);
+  border: 1px solid rgba(0,0,0,.18);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.78em;
+  font-family: 'Courier New', monospace;
+  color: var(--text-mid, #3a3a3a);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+header kbd {
+  background: rgba(255,255,255,.1);
+  border-color: rgba(255,255,255,.25);
+  color: var(--accent-light, #ddb85a);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MEJORA 20 — Scrollbar personalizado (navegadores WebKit)
+   ═══════════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: var(--bg, #ede8df); }
+::-webkit-scrollbar-thumb {
+  background: var(--accent, #b8903a);
+  border-radius: 4px;
+  opacity: 0.7;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent-light, #ddb85a); }
+/* ─── Focus visible (accessibility) ──────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+button:focus-visible, .nav-tab:focus-visible {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 3px;
+}
+
+/* ─── Smooth image reveal on load ────────────────────────────────────────── */
+.comic-img-wrap img {
+  opacity: 0;
+  animation: imgReveal 0.6s ease forwards;
+}
+@keyframes imgReveal {
+  to { opacity: 1; }
+}
+
+/* ─── CDM hover: subtle glow on header ──────────────────────────────────── */
+.cdm-card:hover .cdm-header {
+  filter: brightness(1.08);
+  transition: filter 0.3s ease;
+}
+
+/* ─── Emergency panel scanline — only when not reduced-motion ───────────── */
+@media (prefers-reduced-motion: no-preference) {
+  #emergency-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: rgba(255,100,50,.6);
+    box-shadow: 0 0 8px rgba(255,100,50,.8);
+    animation: epScan 2s linear infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+  @keyframes epScan {
+    0%   { top: 0%; opacity: 1; }
+    90%  { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+}
+
+/* ─── Sec header: eyebrow with underline decoration ─────────────────────── */
+.sec-eyebrow {
+  position: relative;
+  display: inline-block;
+}
+.sec-eyebrow::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+/* ─── Sidebar sections: better visual separation ────────────────────────── */
+.sb-section + .sb-section {
+  border-top: 1px solid rgba(184,144,58,.08);
+}
+
+/* ─── sb-btn active pulse ────────────────────────────────────────────────── */
+.sb-btn.sb-active {
+  position: relative;
+}
+.sb-btn.sb-active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--accent-light);
+  border-radius: 2px 0 0 2px;
+}
+
+/* ─── Header: subtle shimmer on the gold rule line ──────────────────────── */
+.header-rule span {
+  background: linear-gradient(90deg, transparent, var(--accent-light), transparent);
+  background-size: 200% 100%;
+  animation: ruleShimmer 3s linear infinite;
+}
+@keyframes ruleShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   POLISH v3 — fine-tuned improvements to sidebar, pressure, stats, alerts
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Pressure bars — smoother animation */
+.ph-bar {
+  transition: width 0.6s ease, background-color 0.4s ease !important;
+}
+
+/* Session stats rows spacing */
+.ss-row { display: flex; justify-content: space-between; align-items: center; padding: 0.2rem 0; }
+.ss-label { font-size: 0.82rem; color: rgba(240,234,216,.65); }
+.ss-val { font-size: 0.88rem; color: #ddb85a; font-weight: 600; font-family: 'Playfair Display', serif; }
+
+/* Leak history list — compact */
+.lh-list-inline { list-style: none; padding: 0; margin: 0; }
+.lh-list-inline .lh-empty { font-size: 0.8rem; color: rgba(240,234,216,.4); font-style: italic; padding: 0.3rem 0.2rem; }
+.lh-list-inline .lh-item {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.79rem; padding: 0.28rem 0.2rem;
+  border-bottom: 1px solid rgba(184,144,58,.08);
+  color: rgba(240,234,216,.75);
+}
+.lh-list-inline .lh-idx { color: rgba(184,144,58,.5); min-width: 1.8em; font-size: 0.72rem; }
+.lh-list-inline .lh-tipo { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lh-list-inline .lh-dur { font-size: 0.72rem; color: rgba(184,144,58,.6); white-space: nowrap; }
+.lh-list-inline .lh-item.auto .lh-dur { color: rgba(100,200,100,.7); }
+
+/* Litros counter big value */
+.lc-label { display: block; font-size: 0.72rem; color: rgba(240,234,216,.5); margin-bottom: 0.15rem; }
+.lc-value-big {
+  display: block; font-size: 1.6rem; font-weight: 700;
+  font-family: 'Playfair Display', serif; color: #4ab0e0;
+  letter-spacing: 0.03em;
+}
+
+/* Day-night indicator pill — polished */
+#day-night-indicator {
+  position: absolute; top: 0.65rem; left: 0.75rem;
+  font-size: 0.73rem; font-family: 'Crimson Pro', serif;
+  background: rgba(15,28,20,.82); color: rgba(240,234,216,.82);
+  padding: 0.22rem 0.7rem; border-radius: 20px;
+  border: 1px solid rgba(184,144,58,.25);
+  pointer-events: none; z-index: 15;
+  letter-spacing: 0.05em; user-select: none;
+  backdrop-filter: blur(4px);
+  transition: background 0.5s, color 0.5s;
+}
+#day-night-indicator.night {
+  background: rgba(5,10,22,.88);
+  color: rgba(200,210,255,.85);
+  border-color: rgba(100,120,220,.3);
+}
+
+/* Canvas tooltip — updated text */
+#canvas-tooltip {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  backdrop-filter: blur(6px);
+}
+
+/* Viewer topbar — hide on small screens */
+@media (max-width: 480px) {
+  .viewer-topbar { display: none; }
+  .viewer-layout { height: calc(100vh - 140px); }
+}
+
+/* Sidebar scrollbar glow on hover */
+.sidebar-inner:hover::-webkit-scrollbar-thumb {
+  background: rgba(184,144,58,.45);
+}
+
+/* Clean exit button polish */
+#clean-exit-btn {
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s !important;
+}
+#clean-exit-btn:hover {
+  box-shadow: 0 4px 16px rgba(184,144,58,.25) !important;
+}
