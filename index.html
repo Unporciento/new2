@@ -3,1092 +3,623 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Proyecto de Innovación INACAP: Autonomía Hídrica del Complejo Turístico Playa La Virgen mediante Planta Desalinizadora de Ósmosis Inversa, Red HDPE Sectorizada y Macromedidores Smart Water IoT">
-<meta name="author" content="Equipo de Ingeniería · INACAP">
-<title>Autonomía Hídrica · Complejo Turístico Playa La Virgen · INACAP</title>
-<meta property="og:title" content="Optimización Hídrica - Playa La Virgen">
-<meta property="og:type" content="website">
-<meta name="theme-color" content="#1b3d2d">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b3d2d'/><path d='M16 4 C16 4 7 14 7 19 a9 9 0 0 0 18 0 C25 14 16 4 16 4z' fill='%23b8903a'/></svg>">
-
-<!-- Fuentes -->
+<title>Simulador — Análisis de Sistemas Hidráulicos y Neumáticos Automatizados</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-base:#080d17;
+  --bg-card:#0f1927;
+  --bg-option:#162236;
+  --bg-option-hover:#1e3050;
+  --border:#1e3050;
+  --border-light:#2a4570;
+  --text:#dde6f5;
+  --text-muted:#6b84a8;
+  --accent-cyan:#00d4ff;
+  --accent-green:#2dff9e;
+  --accent-red:#ff4d6d;
+  --accent-amber:#ffc847;
+  --tag-comp:#00d4ff;
+  --tag-valid:#a78bfa;
+  --tag-mant:#ffc847;
+  --tag-auto:#2dff9e;
+  --tag-bomb:#ff9d5c;
+  --radius:13px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-base);
+  background-image:
+    radial-gradient(circle at 10% -5%, rgba(0,212,255,0.07) 0%, transparent 40%),
+    radial-gradient(circle at 92% 8%, rgba(45,255,158,0.05) 0%, transparent 38%);
+  color:var(--text);
+  min-height:100vh;
+  padding:24px 16px 60px;
+  line-height:1.65;
+}
+.app{max-width:860px;margin:0 auto;}
 
-<!-- Estilos -->
-<link rel="stylesheet" href="css/styles.css">
-
-<!-- Three.js import map -->
-<script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
-  }
-</script>
-
-<!-- ══════════════════════════════════════════════════════════════════════
-     SISTEMA DE IMPRESIÓN PDF  —  Ctrl+P
-     Genera un documento académico completo de ~6 páginas:
-       Pág 1  — Portada institucional
-       Pág 2  — Diagnóstico del problema
-       Pág 3-4 — Narrativa (cómic)
-       Pág 5  — Ficha técnica de la maqueta 3D
-       Pág 6  — Matriz CDM
-       Pág 7  — Créditos del equipo
-     ══════════════════════════════════════════════════════════════════════ -->
-<style id="print-styles">
-/* ── Variables de color para impresión (coinciden con la paleta del proyecto) */
-:root {
-  --p-green:  #1b3d2d;
-  --p-gold:   #b8903a;
-  --p-light:  #f7f4ef;
-  --p-text:   #1c1c1c;
-  --p-muted:  #555;
-  --p-border: #d4c9a8;
+/* ── TOPBAR ── */
+.topbar{
+  background:rgba(8,13,23,0.9);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:18px 22px;
+  margin-bottom:22px;
+  position:sticky;top:10px;z-index:10;
+}
+.brand h1{
+  font-family:'Rajdhani',sans-serif;font-weight:700;
+  font-size:1.3rem;letter-spacing:0.05em;text-transform:uppercase;color:#f0f6ff;
+}
+.brand p{
+  font-family:'JetBrains Mono',monospace;font-size:0.7rem;
+  color:var(--text-muted);letter-spacing:0.04em;margin-top:4px;
+}
+.progress-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin:14px 0 8px;gap:8px;flex-wrap:wrap;
+}
+.mono-tag{
+  font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+  letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);
+}
+.mono-tag.accent{color:var(--accent-cyan);}
+.progress-track{
+  position:relative;height:9px;
+  background:var(--bg-option);border:1px solid var(--border);
+  border-radius:6px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--accent-cyan),#5ef8ff);
+  box-shadow:0 0 14px rgba(0,212,255,0.5);
+  transition:width 0.45s ease;
+}
+.progress-track::after{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    90deg,transparent 0,transparent calc(100%/15 - 2px),
+    var(--bg-base) calc(100%/15 - 2px),var(--bg-base) calc(100%/15)
+  );
+  pointer-events:none;
 }
 
-@media print {
-  /* ── Reset global para impresión ───────────────────────────────────────── */
-  *, *::before, *::after {
-    box-sizing: border-box !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* ── Ocultar elementos no imprimibles ──────────────────────────────────── */
-  .nav-tabs,
-  .header-export-hint,
-  .header-progress-bar,
-  .header-rule,
-  #section-3d .viewer-layout,
-  #section-3d .canvas-wrap,
-  #section-3d .viewer-topbar p,
-  .sidebar, .sidebar-toggle,
-  #alerta-fuga, #canvas-tooltip,
-  #leak-history-panel, #leak-timer-badge,
-  #liters-lost-hud, #session-stats-hud,
-  #day-night-indicator, #cam-minimap,
-  #shortcut-panel, #btn-shortcuts,
-  #three-loader, #onboarding-toast,
-  audio, script { display: none !important; }
-
-  /* ── Mostrar TODAS las secciones ───────────────────────────────────────── */
-  .section { display: block !important; }
-
-  /* ── Tipografía base ───────────────────────────────────────────────────── */
-  body {
-    font-family: 'Crimson Pro', Georgia, serif !important;
-    font-size: 10.5pt !important;
-    line-height: 1.6 !important;
-    color: var(--p-text) !important;
-    background: #fff !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* ════════════════════════════════════════════════════════════════════════
-     PÁGINA 1 — PORTADA INSTITUCIONAL
-     ════════════════════════════════════════════════════════════════════════ */
-  header {
-    background: var(--p-green) !important;
-    color: #fff !important;
-    min-height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    padding: 3cm 2.5cm !important;
-    page-break-after: always !important;
-    position: relative !important;
-  }
-  /* Línea dorada superior */
-  header::before {
-    content: '' !important;
-    display: block !important;
-    width: 100% !important;
-    height: 6px !important;
-    background: var(--p-gold) !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-  }
-  /* Bloque central de portada */
-  header::after {
-    content: '' !important;
-    display: block !important;
-    width: 60px !important;
-    height: 2px !important;
-    background: var(--p-gold) !important;
-    margin: 1.5cm auto 0 !important;
-  }
-  header .header-institution {
-    display: block !important;
-    color: rgba(184,144,58,.85) !important;
-    font-size: 8pt !important;
-    letter-spacing: 0.25em !important;
-    text-transform: uppercase !important;
-    border: 1px solid rgba(184,144,58,.4) !important;
-    padding: .5rem 1.5rem !important;
-    margin-bottom: 1.8cm !important;
-    display: inline-block !important;
-  }
-  header h1 {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 28pt !important;
-    font-weight: 700 !important;
-    color: #fff !important;
-    line-height: 1.2 !important;
-    margin-bottom: .4cm !important;
-  }
-  header h1 em {
-    display: block !important;
-    color: #ddb85a !important;
-    font-style: normal !important;
-    font-size: 20pt !important;
-    margin-top: .3cm !important;
-  }
-  header .header-subtitle {
-    color: rgba(255,255,255,.7) !important;
-    font-style: italic !important;
-    font-size: 11pt !important;
-    margin-top: .8cm !important;
-  }
-  /* Bloque de datos de portada (inyectado por JS) */
-  #print-cover-data {
-    display: block !important;
-    margin-top: 2.5cm !important;
-    padding: .8cm 1.5cm !important;
-    border: 1px solid rgba(184,144,58,.35) !important;
-    color: rgba(255,255,255,.8) !important;
-    font-size: 9pt !important;
-    line-height: 2.2 !important;
-    text-align: left !important;
-    max-width: 14cm !important;
-  }
-  #print-cover-data strong { color: #ddb85a !important; }
-
-  /* ════════════════════════════════════════════════════════════════════════
-     PÁGINA 2 — DIAGNÓSTICO DEL PROBLEMA (bloque oculto en pantalla)
-     ════════════════════════════════════════════════════════════════════════ */
-  #print-diagnostico {
-    display: block !important;
-    page-break-before: always !important;
-    padding: 1.5cm 2cm !important;
-    font-size: 10.5pt !important;
-  }
-  #print-diagnostico h2 {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 22pt !important;
-    color: var(--p-green) !important;
-    border-bottom: 3px solid var(--p-gold) !important;
-    padding-bottom: .3cm !important;
-    margin-bottom: .8cm !important;
-  }
-  #print-diagnostico .diag-cols {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 1.2cm !important;
-    margin-top: .8cm !important;
-  }
-  #print-diagnostico .diag-col h3 {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 13pt !important;
-    color: var(--p-green) !important;
-    margin-bottom: .4cm !important;
-    padding-left: .3cm !important;
-    border-left: 3px solid var(--p-gold) !important;
-  }
-  #print-diagnostico .diag-col ul {
-    padding-left: 1.2em !important;
-    color: var(--p-text) !important;
-    line-height: 1.9 !important;
-  }
-  #print-diagnostico .diag-col ul li { margin-bottom: .25cm !important; }
-  #print-diagnostico .diag-col ul li strong { color: var(--p-green) !important; }
-  #print-diagnostico .diag-context {
-    margin-top: .8cm !important;
-    padding: .6cm .8cm !important;
-    background: #f0ece4 !important;
-    border-left: 4px solid var(--p-gold) !important;
-    font-style: italic !important;
-    color: var(--p-muted) !important;
-    font-size: 10pt !important;
-  }
-
-  /* ════════════════════════════════════════════════════════════════════════
-     PÁGINAS 3-4 — NARRATIVA DEL PROYECTO (cómic)
-     ════════════════════════════════════════════════════════════════════════ */
-  #section-comic {
-    page-break-before: always !important;
-    padding: 0 !important;
-  }
-  #section-comic .sec-header {
-    padding: .8cm 2cm .5cm !important;
-    text-align: center !important;
-  }
-  #section-comic .sec-eyebrow {
-    color: var(--p-gold) !important;
-    font-size: 8pt !important;
-    letter-spacing: .2em !important;
-    text-transform: uppercase !important;
-    display: block !important;
-  }
-  #section-comic .sec-title {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 18pt !important;
-    color: var(--p-green) !important;
-    margin: .2cm 0 !important;
-  }
-  #section-comic .sec-rule {
-    width: 50px !important;
-    height: 2px !important;
-    background: var(--p-gold) !important;
-    margin: .3cm auto !important;
-  }
-  #section-comic .inner { padding: 0 1.5cm 1cm !important; }
-  .comic-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: .7cm !important;
-  }
-  .comic-card {
-    border: 1px solid var(--p-border) !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    background: #fff !important;
-    overflow: hidden !important;
-  }
-  .comic-tag {
-    background: var(--p-green) !important;
-    color: #ddb85a !important;
-    font-size: 7pt !important;
-    letter-spacing: .12em !important;
-    text-transform: uppercase !important;
-    padding: .2cm .4cm !important;
-    display: flex !important;
-    gap: .3em !important;
-  }
-  .scene-num { opacity: .6 !important; font-size: 10pt !important; }
-  .comic-img-wrap {
-    width: 100% !important;
-    aspect-ratio: 4/3 !important;
-    overflow: hidden !important;
-    background: #e8e0d0 !important;
-  }
-  .comic-img-wrap img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-  .comic-body { padding: .4cm .5cm !important; }
-  .comic-scene-title {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 9pt !important;
-    color: var(--p-green) !important;
-    font-weight: 700 !important;
-    margin-bottom: .15cm !important;
-  }
-  .comic-body p { font-size: 8.5pt !important; color: var(--p-muted) !important; line-height: 1.5 !important; }
-
-  /* ════════════════════════════════════════════════════════════════════════
-     PÁGINA 5 — FICHA TÉCNICA MAQUETA 3D
-     ════════════════════════════════════════════════════════════════════════ */
-  #section-3d {
-    page-break-before: always !important;
-    padding: 1.5cm 2cm !important;
-  }
-  #section-3d .viewer-topbar {
-    display: block !important;
-    border: none !important;
-    padding: 0 0 .5cm !important;
-  }
-  #section-3d .viewer-topbar h2 {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 22pt !important;
-    color: var(--p-green) !important;
-    border-bottom: 3px solid var(--p-gold) !important;
-    padding-bottom: .3cm !important;
-    margin-bottom: .6cm !important;
-  }
-  #section-3d .legend { display: none !important; }
-  /* Bloque de ficha técnica (inyectado por JS en print-prep) */
-  #print-3d-ficha {
-    display: block !important;
-  }
-  #print-3d-ficha .ficha-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: .8cm !important;
-    margin-top: .5cm !important;
-  }
-  #print-3d-ficha .ficha-box {
-    border: 1px solid var(--p-border) !important;
-    padding: .5cm .7cm !important;
-    background: #faf8f4 !important;
-  }
-  #print-3d-ficha .ficha-box h4 {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 10pt !important;
-    color: var(--p-green) !important;
-    border-bottom: 1px solid var(--p-border) !important;
-    padding-bottom: .2cm !important;
-    margin-bottom: .3cm !important;
-    text-transform: uppercase !important;
-    letter-spacing: .08em !important;
-  }
-  #print-3d-ficha .ficha-box ul {
-    padding-left: 1em !important;
-    font-size: 9pt !important;
-    line-height: 1.9 !important;
-    color: var(--p-text) !important;
-  }
-  #print-3d-ficha .ficha-placeholder {
-    margin-top: .8cm !important;
-    height: 6cm !important;
-    border: 2px dashed var(--p-gold) !important;
-    background: #f5f0e8 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    font-family: 'Playfair Display', serif !important;
-    font-size: 11pt !important;
-    color: var(--p-green) !important;
-    line-height: 2 !important;
-  }
-
-  /* ════════════════════════════════════════════════════════════════════════
-     PÁGINA 6 — MATRIZ CDM
-     ════════════════════════════════════════════════════════════════════════ */
-  #section-cdm {
-    page-break-before: always !important;
-    padding: 0 !important;
-  }
-  #section-cdm .sec-header {
-    padding: .8cm 2cm .5cm !important;
-    text-align: center !important;
-  }
-  #section-cdm .sec-eyebrow { color: var(--p-gold) !important; font-size: 8pt !important; }
-  #section-cdm .sec-title {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 18pt !important;
-    color: var(--p-green) !important;
-  }
-  #section-cdm .inner { padding: .3cm 1.5cm 1cm !important; }
-  .cdm-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: .6cm !important;
-  }
-  .cdm-card {
-    border: 1px solid var(--p-border) !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    background: #fff !important;
-    overflow: hidden !important;
-  }
-  .cdm-card--cualidades  .cdm-header { background: var(--p-green) !important; }
-  .cdm-card--debilidades .cdm-header { background: #6b5230 !important; }
-  .cdm-card--mejoras     .cdm-header { background: #3a6b4a !important; }
-  .cdm-header {
-    padding: .5cm .7cm !important;
-    text-align: center !important;
-  }
-  .cdm-icon { font-size: 14pt !important; color: #ddb85a !important; display: block !important; margin-bottom: .15cm !important; }
-  .cdm-header h3 { font-family: 'Playfair Display', serif !important; font-size: 14pt !important; color: #fff !important; margin: 0 !important; }
-  .cdm-header p { font-size: 7.5pt !important; color: rgba(255,255,255,.8) !important; letter-spacing: .1em !important; text-transform: uppercase !important; margin: .1cm 0 0 !important; }
-  .cdm-list { padding: .5cm .6cm !important; list-style: none !important; }
-  .cdm-list li { padding-left: .8em !important; margin-bottom: .35cm !important; font-size: 9pt !important; color: var(--p-text) !important; position: relative !important; line-height: 1.55 !important; }
-  .cdm-list li::before { content: '■' !important; position: absolute !important; left: 0 !important; top: 3px !important; font-size: 5pt !important; color: var(--p-gold) !important; }
-  .cdm-list strong { display: block !important; font-family: 'Playfair Display', serif !important; font-size: 9.5pt !important; color: var(--p-green) !important; margin-bottom: .05cm !important; }
-
-  /* ════════════════════════════════════════════════════════════════════════
-     PÁGINA 7 — FOOTER / CRÉDITOS
-     ════════════════════════════════════════════════════════════════════════ */
-  footer {
-    page-break-before: always !important;
-    background: var(--p-green) !important;
-    min-height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    padding: 3cm 3cm !important;
-    border-top: 6px solid var(--p-gold) !important;
-  }
-  .footer-top {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr !important;
-    gap: 2cm !important;
-    align-items: start !important;
-    margin-bottom: 2cm !important;
-  }
-  .footer-brand strong {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 18pt !important;
-    color: #fff !important;
-    display: block !important;
-    margin-bottom: .3cm !important;
-  }
-  .footer-brand span { color: rgba(255,255,255,.7) !important; font-size: 10pt !important; display: block !important; }
-  .footer-credits-label {
-    font-size: 7.5pt !important;
-    letter-spacing: .2em !important;
-    text-transform: uppercase !important;
-    color: #ddb85a !important;
-    display: block !important;
-    margin-bottom: .3cm !important;
-  }
-  .footer-names { color: #fff !important; font-size: 11pt !important; line-height: 1.9 !important; }
-  .footer-professor-name { color: #fff !important; font-family: 'Playfair Display', serif !important; font-size: 13pt !important; font-weight: 600 !important; }
-  .footer-professor-course { color: rgba(255,255,255,.7) !important; font-style: italic !important; font-size: 10pt !important; margin-top: .2cm !important; }
-  .footer-bottom {
-    border-top: 1px solid rgba(184,144,58,.3) !important;
-    padding-top: .8cm !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    font-size: 8.5pt !important;
-    color: rgba(255,255,255,.5) !important;
-  }
-  .footer-bottom-rule { display: inline-block !important; width: 1px !important; height: 10px !important; background: rgba(255,255,255,.3) !important; margin: 0 .5em !important; vertical-align: middle !important; }
-
-  /* ── Número de página en cada hoja ─────────────────────────────────────── */
-  @page {
-    margin: 0;
-    size: A4 portrait;
-  }
+/* ── CARD ── */
+.quiz-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;
 }
+.fade-in{animation:fadeSlide 0.42s ease;}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.meta-row{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;}
+.badge{
+  font-family:'JetBrains Mono',monospace;font-size:0.67rem;
+  text-transform:uppercase;letter-spacing:0.09em;
+  padding:5px 12px;border-radius:999px;
+  border:1px solid var(--border-light);color:var(--text-muted);
+  background:rgba(255,255,255,0.02);
+}
+.badge-type{color:var(--accent-cyan);border-color:var(--accent-cyan);background:rgba(0,212,255,0.08);}
+.tag-comp{color:var(--tag-comp);border-color:var(--tag-comp);background:rgba(0,212,255,0.07);}
+.tag-valid{color:var(--tag-valid);border-color:var(--tag-valid);background:rgba(167,139,250,0.08);}
+.tag-mant{color:var(--tag-mant);border-color:var(--tag-mant);background:rgba(255,200,71,0.08);}
+.tag-auto{color:var(--tag-auto);border-color:var(--tag-auto);background:rgba(45,255,158,0.07);}
+.tag-bomb{color:var(--tag-bomb);border-color:var(--tag-bomb);background:rgba(255,157,92,0.08);}
+
+.question-text{
+  font-size:1.04rem;font-weight:500;color:#eaf2ff;margin-bottom:20px;
+}
+
+/* ── OPTIONS ── */
+#optionsList{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.option{
+  display:flex;align-items:flex-start;gap:13px;
+  background:var(--bg-option);border:1px solid var(--border);
+  border-left:4px solid transparent;border-radius:10px;
+  padding:13px 15px;cursor:pointer;
+  transition:transform 0.2s ease,background-color 0.2s ease,border-color 0.2s ease,box-shadow 0.2s ease;
+}
+.option:hover:not(.disabled){
+  background:var(--bg-option-hover);border-color:var(--accent-cyan);
+  border-left-color:var(--accent-cyan);transform:translateX(6px);
+  box-shadow:0 4px 20px -4px rgba(0,212,255,0.3);
+}
+.option:focus-visible{outline:2px solid var(--accent-cyan);outline-offset:2px;}
+.option.selected{
+  border-color:var(--accent-cyan);border-left-color:var(--accent-cyan);
+  background:rgba(0,212,255,0.06);
+}
+.option.disabled{cursor:default;}
+.option.disabled:hover{transform:none;box-shadow:none;}
+.option.correct-answer{
+  border-color:var(--accent-green);border-left-color:var(--accent-green);
+  background:rgba(45,255,158,0.07);box-shadow:0 4px 18px -4px rgba(45,255,158,0.28);
+}
+.option.incorrect-answer{
+  border-color:var(--accent-red);border-left-color:var(--accent-red);
+  background:rgba(255,77,109,0.07);box-shadow:0 4px 18px -4px rgba(255,77,109,0.28);
+}
+.option-letter{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.84rem;
+  width:27px;height:27px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border-light);border-radius:6px;
+  color:var(--text-muted);
+  transition:color 0.2s,border-color 0.2s;
+}
+.option:hover:not(.disabled) .option-letter{color:var(--accent-cyan);border-color:var(--accent-cyan);}
+.option.selected .option-letter{color:var(--accent-cyan);border-color:var(--accent-cyan);}
+.option.correct-answer .option-letter{color:var(--accent-green);border-color:var(--accent-green);}
+.option.incorrect-answer .option-letter{color:var(--accent-red);border-color:var(--accent-red);}
+.option-text{font-size:0.94rem;padding-top:2px;}
+
+/* ── FEEDBACK ── */
+.feedback-panel{border-radius:10px;padding:15px 18px;margin-bottom:18px;border-left:4px solid;}
+.feedback-correct{background:rgba(45,255,158,0.05);border-color:var(--accent-green);}
+.feedback-incorrect{background:rgba(255,77,109,0.05);border-color:var(--accent-red);}
+.feedback-label{
+  font-family:'JetBrains Mono',monospace;font-size:0.66rem;
+  text-transform:uppercase;letter-spacing:0.09em;color:var(--text-muted);
+  display:block;margin-bottom:5px;
+}
+.feedback-title{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.04rem;
+  letter-spacing:0.02em;margin-bottom:7px;
+}
+.feedback-correct .feedback-title{color:var(--accent-green);}
+.feedback-incorrect .feedback-title{color:var(--accent-red);}
+.feedback-justification{font-size:0.91rem;color:var(--text);opacity:0.92;}
+
+/* ── BUTTONS ── */
+.primary-btn{
+  width:100%;padding:15px;border:none;border-radius:10px;
+  background:var(--accent-cyan);color:#000d1a;
+  font-family:'Rajdhani',sans-serif;font-weight:700;
+  font-size:1rem;text-transform:uppercase;letter-spacing:0.07em;
+  cursor:pointer;
+  transition:transform 0.2s,box-shadow 0.2s,background-color 0.2s;
+}
+.primary-btn:hover:not(:disabled){
+  background:#33dcff;
+  box-shadow:0 0 24px rgba(0,212,255,0.42);transform:translateY(-2px);
+}
+.primary-btn:disabled{
+  background:var(--bg-option);color:var(--text-muted);cursor:not-allowed;
+}
+.secondary-btn{
+  padding:13px 32px;border:1px solid var(--accent-cyan);
+  background:transparent;color:var(--accent-cyan);border-radius:10px;
+  font-family:'Rajdhani',sans-serif;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.07em;font-size:0.94rem;
+  cursor:pointer;transition:background-color 0.2s,box-shadow 0.2s;
+}
+.secondary-btn:hover{background:rgba(0,212,255,0.08);box-shadow:0 0 20px rgba(0,212,255,0.22);}
+
+/* ── RESULTS ── */
+.results-screen{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:38px 26px;text-align:center;
+}
+.gauge-wrap{position:relative;width:200px;height:200px;margin:16px auto 12px;}
+.gauge-wrap svg{transform:rotate(-90deg);width:100%;height:100%;}
+.gauge-track{fill:none;stroke:var(--border);stroke-width:13;}
+.gauge-fill{
+  fill:none;stroke:var(--accent-cyan);stroke-width:13;stroke-linecap:round;
+  stroke-dasharray:534;stroke-dashoffset:534;
+  transition:stroke-dashoffset 1.1s ease,stroke 0.4s ease;
+}
+.gauge-text{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.gauge-score{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:2.4rem;color:#f0f6ff;}
+.gauge-pct{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--text-muted);letter-spacing:0.05em;}
+.result-message{font-size:1rem;max-width:480px;margin:8px auto 26px;color:var(--text);}
+.breakdown-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:28px;}
+.led{
+  width:34px;height:34px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:0.74rem;font-weight:700;border:1px solid;
+}
+.led-correct{background:rgba(45,255,158,0.09);border-color:var(--accent-green);color:var(--accent-green);}
+.led-incorrect{background:rgba(255,77,109,0.09);border-color:var(--accent-red);color:var(--accent-red);}
+[hidden]{display:none !important;}
+@media(max-width:560px){
+  .quiz-card{padding:18px;}
+  .question-text{font-size:0.97rem;}
+  .gauge-wrap{width:170px;height:170px;}
+  .gauge-score{font-size:2rem;}
+  .results-screen{padding:28px 16px;}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
 </style>
-
-<!-- Script print-prep: inyecta bloques extra ANTES de imprimir y los limpia después -->
-<script>
-(function() {
-  // ── Fecha en la portada ─────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    document.body.setAttribute('data-print-date',
-      new Date().toLocaleDateString('es-CL', { year:'numeric', month:'long', day:'numeric' })
-    );
-
-    // ── Bloque de datos en la portada ──────────────────────────────────────
-    const coverData = document.createElement('div');
-    coverData.id = 'print-cover-data';
-    coverData.style.display = 'none';   // oculto en pantalla
-    coverData.innerHTML = `
-      <div><strong>Proyecto:</strong> Optimización Hídrica del Complejo Turístico Playa La Virgen</div>
-      <div><strong>Asignatura:</strong> Innovación y Emprendimiento</div>
-      <div><strong>Institución:</strong> INACAP · Sede Atacama</div>
-      <div><strong>Docente:</strong> Raul Alberto Araya Zepeda</div>
-      <div><strong>Equipo:</strong> Simón Olivares · Julio Sinisterra · Millaray Aguirre · Renato Borquez · Wiljer Mamani</div>
-      <div><strong>Fecha:</strong> <span id="cover-date"></span></div>
-    `;
-    document.querySelector('header')?.appendChild(coverData);
-    document.getElementById('cover-date').textContent =
-      new Date().toLocaleDateString('es-CL', { year:'numeric', month:'long', day:'numeric' });
-
-    // ── Página 2: Diagnóstico (solo impresión) ────────────────────────────
-    const diag = document.createElement('section');
-    diag.id = 'print-diagnostico';
-    diag.style.display = 'none';
-    diag.innerHTML = `
-      <h2>Diagnóstico del Problema y Propuesta de Solución</h2>
-      <div class="diag-context">
-        El Complejo Turístico Playa La Virgen se ubica en la Región de Atacama, una de las zonas
-        con mayor escasez hídrica del mundo — con solo 1.5 mm de precipitación promedio anual. Este proyecto responde a una problemática real detectada
-        en terreno y propone soluciones de ingeniería concretas, innovadoras y sustentables.
-      </div>
-      <div class="diag-cols">
-        <div class="diag-col">
-          <h3>⚠️ Problemas Identificados</h3>
-          <ul>
-            <li><strong>Dependencia de camiones aljibe</strong> — altos costos operacionales y logística compleja en zona árida.</li>
-            <li><strong>Fugas subterráneas invisibles</strong> — tramos HDPE sin planos digitales presentan filtraciones ocultas bajo la arena.</li>
-            <li><strong>Mantenimiento puramente reactivo</strong> — sin sectorización ni monitoreo digital, las fallas solo se detectan cuando ya son visibles.</li>
-            <li><strong>Desperdicio nocturno</strong> — consumo anormal por fugas y malos hábitos de turistas (dejar correr el agua).</li>
-          </ul>
-        </div>
-        <div class="diag-col">
-          <h3>✅ Soluciones Propuestas</h3>
-          <ul>
-            <li><strong>Planta Desalinizadora de Osmosis Inversa</strong> — genera 35 m³ diarios, logrando autonomía hídrica total.</li>
-            <li><strong>Sensores IoT y Smart Water</strong> — macromedidores ultrasónicos en la nube detectan micro-fugas en tiempo real.</li>
-            <li><strong>Sectorización y renovación HDPE</strong> — reemplazar tramos defectuosos y dividir en sectores medibles.</li>
-            <li><strong>Plan de Mantenimiento Preventivo</strong> — inspecciones programadas basadas en datos de sensores.</li>
-            <li><strong>Reutilización de Aguas Grises</strong> — sistema de filtración para riego de áreas verdes del complejo.</li>
-          </ul>
-        </div>
-      </div>
-    `;
-    // Insertar antes de section-comic
-    const comic = document.getElementById('section-comic');
-    comic?.parentNode?.insertBefore(diag, comic);
-
-    // ── Página 5: Ficha técnica de la maqueta 3D (solo impresión) ────────
-    const ficha = document.createElement('div');
-    ficha.id = 'print-3d-ficha';
-    ficha.style.display = 'none';
-    ficha.innerHTML = `
-      <div class="ficha-grid">
-        <div class="ficha-box">
-          <h4>Componentes del Sistema Modelado</h4>
-          <ul>
-            <li>Planta Desalinizadora de Osmosis Inversa</li>
-            <li>Estanque principal en la cima del cerro</li>
-            <li>Red de tuberías HDPE sectorizada (9 puntos)</li>
-            <li>6 cabañas de huéspedes con red de distribución</li>
-            <li>Casa principal con sistema independiente</li>
-            <li>Macromedidores digitales (bocas de registro)</li>
-            <li>Sistema de flujo animado con detección de fugas</li>
-          </ul>
-        </div>
-        <div class="ficha-box">
-          <h4>Funcionalidades Interactivas</h4>
-          <ul>
-            <li>Simulador de fugas con 3 niveles de gravedad</li>
-            <li>Panel de presión en tiempo real (bar)</li>
-            <li>Modo Radiografía X-Ray de tuberías subterráneas</li>
-            <li>Ciclo día / noche con sol, luna y estrellas animadas</li>
-            <li>Postes de alumbrado público georeferenciados</li>
-            <li>Animaciones: gaviotas, velero, auto, peces, humo</li>
-            <li>Tour automático entre vistas predefinidas</li>
-          </ul>
-        </div>
-        <div class="ficha-box">
-          <h4>Datos Técnicos del Simulador</h4>
-          <ul>
-            <li>Motor gráfico: Three.js r160 (WebGL)</li>
-            <li>Geometrías procedurales + ShaderMaterial GLSL</li>
-            <li>Sombras PCFSoft — resolución 2048×2048</li>
-            <li>9 puntos de fuga distribuidos en la red real</li>
-            <li>Transición día/noche con interpolación suave</li>
-            <li>Compatible: Chrome, Firefox, Edge (escritorio)</li>
-          </ul>
-        </div>
-        <div class="ficha-box">
-          <h4>Indicadores del Sistema Hídrico</h4>
-          <ul>
-            <li>Producción diaria estimada: <strong>35 m³/día</strong></li>
-            <li>Presión nominal estanque: <strong>~9.0 bar</strong></li>
-            <li>Presión nominal cabañas: <strong>~6.5 bar</strong></li>
-            <li>Goteo leve: pérdida ~0.5 L/s · 15 s respuesta</li>
-            <li>Fisura media: pérdida ~1.5 L/s · 10 s respuesta</li>
-            <li>Rotura crítica: pérdida ~3.0 L/s · 6 s respuesta</li>
-          </ul>
-        </div>
-      </div>
-      <div class="ficha-placeholder">
-        🖥 Maqueta 3D Interactiva · Complejo Turístico Playa La Virgen\A
-        Disponible en la versión web del proyecto
-      </div>
-    `;
-    const section3d = document.getElementById('section-3d');
-    const topbar = section3d?.querySelector('.viewer-topbar');
-    if (topbar) topbar.after(ficha);
-
-    // ── Mostrar/ocultar bloques según @media print ─────────────────────────
-    // Antes de imprimir: mostrar los bloques extra
-    window.addEventListener('beforeprint', () => {
-      coverData.style.display = 'block';
-      diag.style.display      = 'block';
-      ficha.style.display     = 'block';
-    });
-    // Después de imprimir: ocultarlos de nuevo
-    window.addEventListener('afterprint', () => {
-      coverData.style.display = 'none';
-      diag.style.display      = 'none';
-      ficha.style.display     = 'none';
-    });
-  });
-})();
-</script>
-
-<!-- fecha inyectada por print-prep script arriba -->
 </head>
-
 <body>
+<div class="app">
 
-<!-- ═══════════════════ HEADER ═══════════════════════════════════════════ -->
-<header>
-  <div class="header-institution">Equipo de Ingeniería &nbsp;·&nbsp; Proyecto de Innovación &nbsp;·&nbsp; INACAP</div>
-  <h1>Autonomía Hídrica <em>Complejo Turístico Playa La Virgen</em></h1>
-  <p class="header-subtitle">Planta Desalinizadora de Ósmosis Inversa &nbsp;·&nbsp; Red HDPE Sectorizada &nbsp;·&nbsp; Macromedidores Smart Water IoT</p>
-  <div class="header-progress-bar" aria-hidden="true"></div>
-  <div class="header-rule"><span></span><i>◆</i><span></span></div>
-
-  <!-- Hint de exportación — solo visible en pantalla, nunca en impresión -->
-  <div class="header-export-hint" aria-label="Atajos de exportación">
-    <span><kbd>Ctrl+P</kbd> PDF</span>
-    <span class="hint-sep">·</span>
-    <span><kbd>Ctrl+Shift+P</kbd> Captura 3D</span>
+<header class="topbar">
+  <div class="brand">
+    <h1>⚙ Sistemas Hidráulicos y Neumáticos Automatizados</h1>
+    <p>Simulador de examen · GMON32 · Mecánica Automotriz en Maquinaria Pesada</p>
+  </div>
+  <div class="progress-row">
+    <span id="qCounter" class="mono-tag">PREGUNTA 1 / 15</span>
+    <span id="scoreCounter" class="mono-tag accent">ACIERTOS 0/15</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
   </div>
 </header>
 
-<!-- ═══════════════════ NAVEGACIÓN ════════════════════════════════════════ -->
-<nav class="nav-tabs" role="navigation" aria-label="Secciones del proyecto">
-  <button class="nav-tab active" id="tab-comic" aria-controls="section-comic">
-    <span class="tab-num">I.</span>Contexto e Implementación
-  </button>
-  <button class="nav-tab" id="tab-3d" aria-controls="section-3d">
-    <span class="tab-num">II.</span>Maqueta 3D Interactiva
-  </button>
-  <button class="nav-tab" id="tab-cdm" aria-controls="section-cdm">
-    <span class="tab-num">III.</span>Matriz de Análisis (CDM)
-  </button>
-</nav>
-
-<!-- ═══════════════════ SECCIÓN 1: CÓMIC ═════════════════════════════════ -->
-<section id="section-comic" class="section active" role="main">
-  <div class="sec-header">
-    <span class="sec-eyebrow">Narrativa del Proyecto · 6 Escenas</span>
-    <h2 class="sec-title">Del Problema a la Solución Hídrica</h2>
-    <div class="sec-rule"></div>
-  </div>
-
-  <div class="inner">
-    <div class="comic-grid">
-
-      <article class="comic-card" aria-label="Escena 00 — El Problema">
-        <div class="comic-tag"><span class="scene-num">00</span><span>El Problema</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/0.jpg" alt="Estanque deteriorado con fugas visibles y camión aljibe AGUA en la zona árida de Playa La Virgen" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Escasez y Fugas Invisibles</h3>
-          <p>El estanque deteriorado pierde agua continuamente mientras camiones aljibe recorren kilómetros para abastecer el complejo. Un modelo insostenible en la zona más árida de Chile.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 01 — Desarrollo">
-        <div class="comic-tag"><span class="scene-num">01</span><span>Desarrollo</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/1.jpg" alt="Trabajadores instalando tubería HDPE en zanja con excavadora, carteles de ingeniería sostenible" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Despliegue de Red HDPE</h3>
-          <p>Equipos de ingeniería instalan tuberías HDPE de alta densidad en zanjas excavadas. Resistencia a la corrosión, larga vida útil e infraestructura 100% sostenible.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 02 — Implementación">
-        <div class="comic-tag"><span class="scene-num">02</span><span>Implementación</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/2.jpg" alt="Planta desalinizadora de ósmosis inversa con producción de 35 m³ por día frente al mar" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Autonomía Hídrica — 35 m³/día</h3>
-          <p>La planta desalinizadora de ósmosis inversa produce 35 m³ de agua limpia diarios directamente del mar. Cero camiones aljibe, cero dependencia externa.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 03 — Tecnología">
-        <div class="comic-tag"><span class="scene-num">03</span><span>Tecnología</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/3.jpg" alt="Macromedidor inteligente ultrasónico y dashboard Smart Water con caudal 125.80 m³/h en tiempo real" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Monitoreo Smart Water</h3>
-          <p>Macromedidores ultrasónicos IoT reportan caudal y presión en tiempo real al dashboard centralizado. Detección instantánea de fugas antes de que se vuelvan críticas.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 04 — La Solución">
-        <div class="comic-tag"><span class="scene-num">04</span><span>La Solución</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/4.jpg" alt="Sistema Autonomía Hídrica completo y operativo con estanque elevado y planta desalinizadora" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Sistema Integrado y Operativo</h3>
-          <p>La solución completa: planta desalinizadora, estanque elevado, red HDPE sectorizada y sensores IoT operando en armonía. Agua segura, producción sostenible, impacto positivo.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 05 — Proyecto Terminado">
-        <div class="comic-tag"><span class="scene-num">05</span><span>Proyecto Terminado</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/5.jpg" alt="Fachada de la planta con logo Autonomía Hídrica iluminada al atardecer, 100% operativa" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Sello de Calidad — 100% Operativo</h3>
-          <p>El complejo luce orgulloso el logo del proyecto iluminado al atardecer. Seguridad total, agua confiable, tecnología inteligente e infraestructura resiliente para las próximas décadas.</p>
-        </div>
-      </article>
-
+<main>
+  <section class="quiz-card fade-in" id="quizCard">
+    <div class="meta-row">
+      <span class="badge badge-type" id="typeBadge"></span>
+      <span class="badge" id="categoryBadge"></span>
     </div>
-  </div>
-</section>
-
-<!-- ═══════════════════ SECCIÓN 2: 3D ════════════════════════════════════ -->
-<section id="section-3d" class="section" aria-label="Maqueta 3D interactiva">
-
-  <div class="viewer-topbar">
-    <div>
-      <h2>Maqueta 3D del Sistema Hídrico</h2>
-      <p>Representación interactiva · Arrastra para rotar · Scroll para zoom · <kbd style="font-size:.75em;background:rgba(0,0,0,.08);padding:1px 5px;border-radius:3px;border:1px solid #ccc">?</kbd> para atajos</p>
+    <p class="question-text" id="questionText"></p>
+    <ul id="optionsList"></ul>
+    <div class="feedback-panel" id="feedbackPanel" hidden>
+      <span class="feedback-label">Análisis técnico</span>
+      <div class="feedback-title" id="feedbackTitle"></div>
+      <p class="feedback-justification" id="feedbackJustification"></p>
     </div>
+    <button class="primary-btn" id="evalBtn" disabled>Evaluar Respuesta</button>
+  </section>
 
-  </div>
-
-  <div class="viewer-layout">
-
-    <!-- ── SIDEBAR IZQUIERDA: Controles ──────────────────────────────── -->
-    <aside class="sidebar sidebar-left" id="sidebar-left" aria-label="Controles">
-      <button class="sidebar-toggle toggle-left" id="sidebar-left-toggle" title="Mostrar/ocultar panel" aria-expanded="true">
-        <span class="st-icon">◀</span>
-      </button>
-      <div class="sidebar-inner">
-
-        <section class="sb-section">
-          <div class="sb-heading">📷 Vistas</div>
-          <button class="sb-btn sb-active" id="btn-general" title="Vista general (tecla 1)">
-            <span class="sb-icon">⊞</span><span class="sb-label">Vista General</span>
-          </button>
-          <button class="sb-btn" id="btn-plant" title="Planta Desalinizadora (tecla 2)">
-            <span class="sb-icon">◧</span><span class="sb-label">Planta Desalinizadora</span>
-          </button>
-          <button class="sb-btn" id="btn-network" title="Cerro y Estanque (tecla 3)">
-            <span class="sb-icon">⛰</span><span class="sb-label">Cerro y Estanque</span>
-          </button>
-          <button class="sb-btn" id="btn-cabins" title="Zona de Cabañas (tecla 4)">
-            <span class="sb-icon">🏠</span><span class="sb-label">Zona de Cabañas</span>
-          </button>
-          <button class="sb-btn" id="btn-main" title="Casa Principal (tecla 5)">
-            <span class="sb-icon">🏛</span><span class="sb-label">Casa Principal</span>
-          </button>
-        </section>
-
-        <section class="sb-section">
-          <div class="sb-heading">⚙️ Simulación</div>
-          <button class="sb-btn sb-btn-fuga" id="btn-fuga" title="Simular fuga (F)">
-            <span class="sb-icon">🚨</span><span class="sb-label">Simular Fuga</span>
-          </button>
-        </section>
-
-        <section class="sb-section">
-          <div class="sb-heading">🎨 Escena</div>
-          <button class="sb-btn" id="btn-day-night">
-            <span class="sb-icon">🌙</span><span class="sb-label">Modo Noche</span>
-          </button>
-          <button class="sb-btn" id="btn-toggle-pipes">
-            <span class="sb-icon">🔧</span><span class="sb-label">Mostrar Tuberías</span>
-          </button>
-          <button class="sb-btn" id="btn-xray">
-            <span class="sb-icon">🔬</span><span class="sb-label">Radiografía</span>
-          </button>
-          <button class="sb-btn" id="btn-clean-view">
-            <span class="sb-icon">✦</span><span class="sb-label">Vista Limpia</span>
-          </button>
-        </section>
-
-        <section class="sb-section">
-          <div class="sb-heading">🎯 Navegación</div>
-          <button class="sb-btn" id="btn-cam-back">
-            <span class="sb-icon">↩</span><span class="sb-label">Vista Anterior</span>
-          </button>
-          <button class="sb-btn" id="btn-tour">
-            <span class="sb-icon">▶</span><span class="sb-label">Tour Automático</span>
-          </button>
-        </section>
-
-        <section class="sb-section sb-legend">
-          <div class="sb-heading">🗺 Leyenda</div>
-          <div class="sb-legend-item"><span class="sb-swatch" style="background:#4a7c6f"></span>Estanques</div>
-          <div class="sb-legend-item"><span class="sb-swatch" style="background:#ddd8ce;border:1px solid #aaa"></span>Planta Desal.</div>
-          <div class="sb-legend-item"><span class="sb-swatch" style="background:#b8903a"></span>Red HDPE</div>
-          <div class="sb-legend-item"><span class="sb-swatch" style="background:#f0ead8;border:1px solid #c85a3a"></span>Cabañas</div>
-        </section>
-
-      </div>
-    </aside>
-
-    <!-- ── CANVAS ──────────────────────────────────────────────────── -->
-    <div class="canvas-wrap" role="region" aria-label="Maqueta 3D interactiva">
-      <canvas id="three-canvas" aria-label="Maqueta 3D interactiva del complejo Playa La Virgen"></canvas>
-
-      <!-- Alerta de fuga -->
-      <div id="alerta-fuga" role="alert" aria-live="assertive">
-        <div class="alert-icon">⚠️</div>
-        <h3>¡ALERTA DE FUGA!</h3>
-        <p>Pérdida de presión detectada.</p>
-        <p class="alert-severity">Gravedad: <span id="tipo-fuga"></span></p>
-        <div class="alert-progress" aria-hidden="true">
-          <div class="alert-progress-bar"></div>
-        </div>
-      </div>
-
-      <!-- Tooltip inicial -->
-      <div id="canvas-tooltip" role="status">
-        Arrastra · Scroll · Teclas 1–5 · F fuga · ? atajos
+  <section class="results-screen" id="resultsScreen" hidden>
+    <span class="badge badge-type">Resultado Final</span>
+    <div class="gauge-wrap">
+      <svg viewBox="0 0 200 200">
+        <circle class="gauge-track" cx="100" cy="100" r="85"></circle>
+        <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="85"></circle>
+      </svg>
+      <div class="gauge-text">
+        <span class="gauge-score" id="resultScoreText">0/15</span>
+        <span class="gauge-pct" id="resultPct">0%</span>
       </div>
     </div>
+    <p class="result-message" id="resultMessage"></p>
+    <div class="breakdown-grid" id="breakdownGrid"></div>
+    <button class="secondary-btn" id="restartBtn">Reintentar Simulador</button>
+  </section>
+</main>
 
-    <!-- ── SIDEBAR DERECHA: Datos del sistema ─────────────────────── -->
-    <aside class="sidebar sidebar-right" id="sidebar-right" aria-label="Datos del sistema">
-      <button class="sidebar-toggle toggle-right" id="sidebar-right-toggle" title="Mostrar/ocultar datos" aria-expanded="true">
-        <span class="st-icon">▶</span>
-      </button>
-      <div class="sidebar-inner">
-
-        <!-- Presión del sistema -->
-        <section class="sb-section">
-          <div class="sb-heading">📡 Presión del Sistema</div>
-          <div id="pressure-hud-inner">
-            <div class="ph-row">
-              <span class="ph-name">Estanque</span>
-              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-1" style="width:92%"></div></div>
-              <span class="ph-val" id="ph-val-1">9.2 bar</span>
-            </div>
-            <div class="ph-row">
-              <span class="ph-name">Casa Princ.</span>
-              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-2" style="width:78%"></div></div>
-              <span class="ph-val" id="ph-val-2">7.8 bar</span>
-            </div>
-            <div class="ph-row">
-              <span class="ph-name">Cabañas</span>
-              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-3" style="width:65%"></div></div>
-              <span class="ph-val" id="ph-val-3">6.5 bar</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Pérdida activa (solo durante fuga) -->
-        <section class="sb-section" id="liters-section" style="display:none">
-          <div class="sb-heading">💧 Pérdida Activa</div>
-          <div class="lc-container">
-            <span class="lc-label">Litros perdidos</span>
-            <span id="lc-value" class="lc-value-big">0 L</span>
-          </div>
-        </section>
-
-        <!-- Estadísticas de sesión -->
-        <section class="sb-section" id="session-stats-section" style="display:none">
-          <div class="sb-heading">📊 Estadísticas</div>
-          <div class="ss-row"><span class="ss-label">Total fugas</span><span class="ss-val" id="ss-total">0</span></div>
-          <div class="ss-row"><span class="ss-label">Agua perdida</span><span class="ss-val" id="ss-water">0 L</span></div>
-          <div class="ss-row"><span class="ss-label">Resp. prom.</span><span class="ss-val" id="ss-avgtime">—</span></div>
-          <div class="ss-row"><span class="ss-label">Auto-resueltas</span><span class="ss-val" id="ss-auto">0</span></div>
-        </section>
-
-        <!-- Registro de fugas -->
-        <section class="sb-section">
-          <div class="sb-heading">📋 Registro
-            <span id="lh-count" style="opacity:.5;font-size:.75em;margin-left:.3em">0 eventos</span>
-          </div>
-          <ul id="lh-list" style="list-style:none;padding:0;margin:0">
-            <li class="lh-empty">Sin eventos en esta sesión.</li>
-          </ul>
-        </section>
-
-      </div>
-    </aside>
-
-  </div><!-- /.viewer-layout -->
-</section>
-
-<!-- ═══════════════════ SECCIÓN 3: CDM ═══════════════════════════════════ -->
-<section id="section-cdm" class="section" aria-label="Matriz CDM">
-  <div class="sec-header">
-    <span class="sec-eyebrow">Análisis Estratégico · Región de Atacama · Proyecto de Innovación INACAP</span>
-    <h2 class="sec-title">Matriz de Cualidades, Debilidades y Mejoras</h2>
-    <div class="sec-rule"></div>
-  </div>
-
-  <div class="inner" style="max-width:1200px;margin:0 auto;padding:0 2rem 5rem;">
-    <div class="cdm-grid">
-
-      <!-- Cualidades -->
-      <div class="cdm-card cdm-card--cualidades">
-        <div class="cdm-header">
-          <div class="cdm-icon" aria-hidden="true">✦</div>
-          <h3>Cualidades</h3>
-          <p>Aspectos positivos y fortalezas</p>
-        </div>
-        <ul class="cdm-list">
-          <li>
-            <strong>Autonomía Hídrica</strong>
-            La planta de ósmosis inversa elimina al 100% la dependencia histórica de camiones aljibe, generando <strong>35 m³/día</strong> de agua potable certificada.
-          </li>
-          <li>
-            <strong>Durabilidad Estructural</strong>
-            El uso de tuberías HDPE sectorizadas garantiza resistencia a la corrosión del terreno salino por décadas.
-          </li>
-          <li>
-            <strong>Control en Tiempo Real</strong>
-            Los macromedidores ultrasónicos IoT detectan caídas de presión y micro-fugas en tiempo real, enviando alertas automáticas al panel centralizado Smart Water.
-          </li>
-        </ul>
-      </div>
-
-      <!-- Debilidades -->
-      <div class="cdm-card cdm-card--debilidades">
-        <div class="cdm-header">
-          <div class="cdm-icon" aria-hidden="true">◈</div>
-          <h3>Debilidades</h3>
-          <p>Puntos a considerar y mitigar</p>
-        </div>
-        <ul class="cdm-list">
-          <li>
-            <strong>Dependencia Eléctrica</strong>
-            La planta de ósmosis inversa y los sensores IoT requieren suministro eléctrico continuo. Un corte prolongado detendría la producción de agua.
-          </li>
-          <li>
-            <strong>Mantenimiento Especializado</strong>
-            El sistema de osmosis inversa exige cambio periódico de filtros y personal técnico capacitado en terreno.
-          </li>
-          <li>
-            <strong>Inversión Inicial Elevada</strong>
-            El costo de implementación de la infraestructura completa y sensores inteligentes es alto en su etapa inicial.
-          </li>
-        </ul>
-      </div>
-
-      <!-- Mejoras -->
-      <div class="cdm-card cdm-card--mejoras">
-        <div class="cdm-header">
-          <div class="cdm-icon" aria-hidden="true">◎</div>
-          <h3>Mejoras</h3>
-          <p>Evolución futura del proyecto</p>
-        </div>
-        <ul class="cdm-list">
-          <li>
-            <strong>Energías Renovables</strong>
-            Instalar paneles solares fotovoltaicos para alimentar la planta y los sensores, logrando autonomía energética total y certificación de energía renovable.
-          </li>
-          <li>
-            <strong>App para Huéspedes</strong>
-            Desarrollar una app móvil donde los huéspedes visualicen su consumo en tiempo real, reciban consejos de ahorro y acumulen puntos por uso responsable del agua.
-          </li>
-          <li>
-            <strong>Reutilización de Aguas Grises</strong>
-            Implementar un sistema paralelo de recolección de aguas grises para el riego de las áreas verdes del complejo.
-          </li>
-        </ul>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════ FOOTER ════════════════════════════════════════════ -->
-<footer role="contentinfo">
-  <div class="footer-top">
-
-    <div class="footer-brand">
-      <strong>Optimización Hídrica</strong>
-      <span>Complejo Turístico Playa La Virgen</span>
-      <span style="margin-top:.4rem;font-style:normal;font-size:.72rem;opacity:.5;">
-        Planta Desalinizadora · Red HDPE · Macromedidores
-      </span>
-    </div>
-
-    <div class="footer-credits">
-      <div class="footer-credits-label">Integrantes</div>
-      <div class="footer-names">
-        Simón Olivares<br>
-        Julio Sinisterra<br>
-        Millaray Aguirre<br>
-        Renato Borquez<br>
-        Wiljer Mamani
-      </div>
-    </div>
-
-    <div class="footer-professor">
-      <div class="footer-credits-label">Docente</div>
-      <div class="footer-professor-name">Raul Alberto Araya Zepeda</div>
-      <div class="footer-professor-course">Innovación y Emprendimiento</div>
-      <div class="footer-credits-label" style="margin-top:.8rem;">Institución</div>
-      <div class="footer-professor-name" style="font-size:.82rem;">INACAP</div>
-    </div>
-
-  </div>
-
-  <div class="footer-bottom">
-    <span>Proyecto de Innovación · Ingeniería</span>
-    <span>
-      Complejo Turístico Playa La Virgen
-      <span class="footer-bottom-rule"></span>
-      Maqueta Interactiva 3D
-    </span>
-  </div>
-</footer>
-
-<!-- Audio de alarma -->
-<audio id="sonido-alerta" loop preload="none" aria-hidden="true">
-  <source src="https://www.soundjay.com/misc/sounds/fail-buzzer-03.mp3" type="audio/mpeg">
-  <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
-</audio>
-
-<!-- Scripts -->
-
+</div>
 <script>
-/* Script único — elimina duplicados de keydown, MutationObserver y sidebar */
-document.addEventListener('DOMContentLoaded', () => {
-
-  /* ── Ripple en botones de cámara ─────────────────────────────────────── */
-  document.querySelectorAll('.cam-btn, .sb-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      const r = document.createElement('span');
-      r.className = 'ripple';
-      const rect = this.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      r.style.cssText = `width:${size}px;height:${size}px;`
-        + `left:${e.clientX - rect.left - size/2}px;`
-        + `top:${e.clientY  - rect.top  - size/2}px`;
-      this.appendChild(r);
-      setTimeout(() => r.remove(), 600);
-    });
-  });
-
-  /* ── Sidebar toggles ─────────────────────────────────────────────────── */
-  function makeSidebarToggle(sidebarId, toggleId, openIcon, closedIcon, prefKey) {
-    const sidebar = document.getElementById(sidebarId);
-    const toggle  = document.getElementById(toggleId);
-    if (!sidebar || !toggle) return;
-    const isOpen = sessionStorage.getItem(prefKey) !== 'false';
-    if (!isOpen) sidebar.classList.add('collapsed');
-    toggle.querySelector('.st-icon').textContent = isOpen ? openIcon : closedIcon;
-    toggle.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      const open = !sidebar.classList.contains('collapsed');
-      sessionStorage.setItem(prefKey, open);
-      toggle.querySelector('.st-icon').textContent = open ? openIcon : closedIcon;
-      toggle.setAttribute('aria-expanded', String(open));
-      window.dispatchEvent(new Event('resize'));
-    });
+const questions = [
+  // ─── BLOQUE 1: COMPONENTES Y ACEITE HIDRÁULICO ───
+  {
+    category:"Componentes Hidráulicos · Aceite",
+    tagClass:"tag-comp",
+    type:"Tecnicismo",
+    question:"El aceite hidráulico cumple múltiples funciones en un sistema oleohidráulico. ¿Cuál de las siguientes listas describe CORRECTAMENTE las cinco funciones principales que debe cumplir un fluido hidráulico en maquinaria pesada?",
+    options:[
+      "Generar presión, aumentar temperatura, producir caudal, ionizar partículas y crear vacío en la línea de succión.",
+      "Transmitir potencia, lubricar partes móviles, disipar calor producido, sellar holguras y proteger contra la corrosión.",
+      "Actuar como combustible alternativo, refrigerar el motor, lubricar la transmisión mecánica, sellar la cámara de combustión y filtrar gases.",
+      "Transmitir potencia, generar corriente eléctrica, regular la presión de neumáticos, lubricar cadenas y disipar calor del freno."
+    ],
+    correct:1,
+    justification:"Según el material de la Unidad 1 (GMON32), el aceite hidráulico debe cumplir exactamente cinco funciones: (1) Transmitir potencia — el fluido circula con bajas pérdidas desde la bomba al actuador; (2) Lubricar partes móviles — forma una película protectora que reduce fricción y desgaste en bombas, válvulas y cilindros; (3) Disipar calor — absorbe la energía térmica generada en el sistema y la transfiere al enfriador y al depósito; (4) Sellar holguras — la viscosidad del aceite rellena las tolerancias entre piezas, impidiendo fugas internas; y (5) Proteger contra la corrosión — el fluido no debe atacar los sellos, metales ni componentes del sistema."
+  },
+  {
+    category:"Componentes Hidráulicos · Depósito",
+    tagClass:"tag-comp",
+    type:"Tecnicismo",
+    question:"Un técnico nota que el aceite hidráulico de un camión minero Komatsu 930E está extremadamente sucio y con presencia de agua emulsionada, aun cuando no han transcurrido las 2000 horas de cambio. ¿Cuál es la función principal del depósito hidráulico que se ha visto más comprometida, además del almacenamiento?",
+    options:[
+      "La función de generar presión de succión para la bomba.",
+      "La función de decantar particulado y sedimentos, además de segregar agua y aire del fluido, permitiendo que el aceite 'descanse' y se depure entre ciclos.",
+      "La función de comprimir el aire para el sistema neumático de frenos.",
+      "La función de regular el caudal máximo que circula por el circuito hidráulico."
+    ],
+    correct:1,
+    justification:"El depósito de aceite hidráulico no es solo un contenedor: su función principal es dar el tiempo necesario para que el aceite disipe calor, decante el agua y sedimentos y segregue el aire disuelto o libre. Si el aceite presenta agua emulsionada y contaminación particulada excesiva, el depósito no está cumpliendo adecuadamente con la decantación y segregación de contaminantes, lo que puede deberse a un depósito subdimensionado, tiempos de retención insuficientes por exceso de caudal de retorno, o contaminación externa severa. La falla de estas funciones lleva a degradación acelerada del aceite y daño prematuro de los componentes del sistema."
+  },
+  // ─── BLOQUE 2: BOMBAS ───
+  {
+    category:"Bombas Oleohidráulicas · Tipos",
+    tagClass:"tag-bomb",
+    type:"Caso Práctico",
+    question:"En el sistema de dirección y frenos de un buldócer Caterpillar D6T se utiliza un tipo específico de bomba hidráulica. Para el sistema de implementos (hoja y desgarrador), que requiere variación de caudal según la demanda, se selecciona otro tipo. ¿Cuál es la combinación técnicamente correcta y por qué?",
+    options:[
+      "Bomba de pistones para dirección (porque varía el caudal) y bomba de engranajes para implementos (porque son más silenciosas).",
+      "Bomba de engranajes para dirección/frenos (caudal fijo, diseño simple y robusto para esta aplicación) y bomba de pistones axiales de caudal variable para implementos (permite variar el desplazamiento mediante la placa inclinada).",
+      "Bomba de paletas de caudal fijo para ambos sistemas, ya que es la única bomba compatible con aceites minerales.",
+      "Motor eléctrico de corriente continua para dirección y bomba de paletas para implementos, ya que los motores eléctricos generan presión directamente."
+    ],
+    correct:1,
+    justification:"Las bombas de engranajes son de caudal positivo y fijo, con diseño simple y construcción robusta, lo que las hace ideales para sistemas de dirección y frenos donde se requiere un caudal constante y alta confiabilidad. Para los implementos (hoja y desgarrador), que requieren variaciones de velocidad y caudal según la posición de la placa de inclinación, las bombas de pistones axiales de caudal variable son la solución técnica: al modificar el ángulo de la placa oscilante, varían su desplazamiento volumétrico por revolución y por tanto el caudal entregado, sin necesidad de cambiar la velocidad de rotación del motor. Esta combinación es la arquitectura estándar en maquinaria pesada moderna."
+  },
+  {
+    category:"Bombas Oleohidráulicas · Principio",
+    tagClass:"tag-bomb",
+    type:"Tecnicismo",
+    question:"Un técnico en formación afirma que 'la bomba hidráulica genera la presión del sistema'. ¿Es esta afirmación correcta desde el punto de vista técnico?",
+    options:[
+      "Sí, completamente correcta: la bomba es el componente que genera directamente la presión de trabajo del sistema.",
+      "No es correcta: la bomba convierte energía mecánica en caudal de fluido. La presión es un fenómeno que se genera al restringir ese caudal; si en el sistema no hay restricción al flujo, no hay presión. Son las válvulas y actuadores (resistencias hidráulicas) quienes determinan la presión.",
+      "Parcialmente: la bomba genera presión pero solo cuando el aceite está frío y tiene alta viscosidad.",
+      "No: la presión la genera exclusivamente la válvula de alivio al abrirse y descargar aceite al tanque."
+    ],
+    correct:1,
+    justification:"Según el material de la Unidad 1: 'La presión es un fenómeno que se genera al restringir el caudal; si en el sistema no hay caudal no hay presión.' Las bombas convierten la energía mecánica del motor en energía hidráulica en forma de caudal de fluido. Cuando ese caudal encuentra resistencia (válvulas, actuadores, restricciones), se genera presión. Por eso, aunque las bombas deben diseñarse para soportar los requerimientos de presión del sistema, ellas no 'generan' presión directamente. Esta distinción conceptual es fundamental para entender el diagnóstico de fallas hidráulicas."
+  },
+  // ─── BLOQUE 3: VÁLVULAS ───
+  {
+    category:"Válvulas Oleohidráulicas · Presión",
+    tagClass:"tag-valid",
+    type:"Caso Práctico",
+    question:"Durante la operación de un cilindro hidráulico de una excavadora, el operador intenta forzar el implemento más allá de su límite de carga. La presión del sistema sube bruscamente. ¿Qué componente actúa para proteger el sistema y cómo lo hace?",
+    options:[
+      "El filtro hidráulico, que al saturarse eleva la presión diferencial y protege la bomba.",
+      "La válvula de alivio de presión, que al superar la presión predeterminada se abre y descarga el aceite al tanque, limitando la presión máxima del sistema y protegiendo sus componentes.",
+      "El acumulador hidráulico, que absorbe el exceso de presión almacenándolo en forma de energía mecánica de resorte.",
+      "La bomba de engranajes, que al detectar el exceso de presión revierte su giro para reducir el caudal."
+    ],
+    correct:1,
+    justification:"Las válvulas de alivio de presión se utilizan para limitar la presión máxima del sistema, con el fin de proteger los componentes del exceso de presión. Cuando la presión del sistema supera el valor predeterminado (ajustado mediante el resorte de la válvula), esta se abre y descarga el aceite directamente al tanque, sin que fluya hacia el actuador. Existen válvulas de alivio de mando directo (fuerza hidráulica vs. tensión de resorte, sin amortiguación) y de mando indirecto (fuerza hidráulica vs. fuerza hidráulica, con comportamiento suave y amortiguado). Son el primer elemento de seguridad en todo circuito hidráulico."
+  },
+  {
+    category:"Válvulas Oleohidráulicas · Tipos",
+    tagClass:"tag-valid",
+    type:"Tecnicismo",
+    question:"En el esquema hidráulico de una motoniveladora se observan cuatro categorías de válvulas. ¿Cuál es la clasificación correcta y la función de cada categoría?",
+    options:[
+      "Válvulas de combustión (queman el aceite), válvulas de mezcla (mezclan agua con aceite), válvulas de electricidad (convierten presión en voltaje) y válvulas de enfriamiento.",
+      "Válvulas de control direccional (dirigen el caudal al circuito deseado), válvulas de control de flujo (regulan velocidad de actuadores), válvulas de control de presión (limitan/reducen/secuencian presión) y válvulas de bloqueo (retención, impiden retroceso de flujo).",
+      "Válvulas de admisión, válvulas de escape, válvulas de distribución y válvulas de purga, igual que en un motor de combustión.",
+      "Solo existen dos tipos en sistemas hidráulicos: válvulas abiertas y válvulas cerradas."
+    ],
+    correct:1,
+    justification:"Los sistemas oleohidráulicos utilizan cuatro categorías de válvulas: (1) Válvulas de control direccional — proporcionan el medio principal para controlar los actuadores, dirigiendo el caudal de aceite al circuito deseado; pueden accionarse manualmente, hidráulicamente, neumáticamente o electrónicamente. (2) Válvulas de control de flujo — regulan la velocidad de los actuadores o dividen el flujo; incluyen estranguladoras y reguladoras compensadas. (3) Válvulas de control de presión — incluyen válvulas de alivio (protección), válvulas de secuencia (alimentan circuitos secundarios a presión predeterminada) y reductoras (para circuitos secundarios de menor presión). (4) Válvulas de bloqueo o retención — permiten flujo en un solo sentido."
+  },
+  {
+    category:"Válvulas Oleohidráulicas · Proporcionales y Servo",
+    tagClass:"tag-valid",
+    type:"Tecnicismo",
+    question:"Un sistema de control automatizado de una pala hidráulica Komatsu PC5500 requiere controlar con precisión la velocidad de extensión de sus cilindros mediante señales eléctricas proporcionales. Según el glosario INACAP, ¿qué elemento del sistema realiza esta función y cómo opera?",
+    options:[
+      "Un relé electromecánico convencional de dos posiciones (abierto/cerrado), ya que puede modular el caudal de forma gradual.",
+      "Una válvula proporcional, que convierte señales eléctricas de corriente o tensión en salidas de fluido controladas en forma proporcional a dicha señal, permitiendo regular de forma continua la dirección, presión y caudal.",
+      "Un presostato, que abre o cierra un contacto dependiendo de la presión del sistema para regular el caudal.",
+      "Un encoder, que asigna un número a la incertidumbre del caudal para calcular el flujo exacto."
+    ],
+    correct:1,
+    justification:"Según el Glosario INACAP GHMN53, las válvulas proporcionales convierten señales eléctricas de corriente o tensión en salidas de fluido controladas en forma proporcional. A diferencia de las válvulas on/off (todo o nada), las válvulas proporcionales permiten una modulación continua y precisa del caudal, presión y dirección en función de la señal eléctrica de mando, lo que las hace indispensables en sistemas electro-hidráulicos automatizados de maquinaria pesada. Las servovalvulas son una versión de mayor precisión que también controlan dirección, presión y caudal con alta dinámica de respuesta."
+  },
+  // ─── BLOQUE 4: AUTOMATIZACIÓN ───
+  {
+    category:"Automatización · PLC y Sensores",
+    tagClass:"tag-auto",
+    type:"Caso Práctico",
+    question:"En una planta de procesamiento minero, la extensión de un cilindro hidráulico debe detenerse automáticamente al llegar a una posición exacta. Se dispone de sensores inductivos y sensores capacitivos. El vástago del cilindro es de acero inoxidable. ¿Qué sensor es el más adecuado para detectar la posición del vástago metálico y por qué?",
+    options:[
+      "Sensor capacitivo, porque puede detectar tanto metales como no metales (plásticos, líquidos, cartones) sin contacto físico, siendo más versátil.",
+      "Sensor inductivo, porque está específicamente diseñado para detectar cuerpos metálicos; su bobina emite un campo magnético que al interactuar con el metal del vástago genera una corriente inductiva que activa la señal de salida.",
+      "Sensor fotoelétrico, porque el haz de luz atraviesa el metal del vástago generando la señal de posición más precisa.",
+      "Presostato, porque la posición del cilindro puede inferirse desde la presión del sistema en cualquier momento del ciclo."
+    ],
+    correct:1,
+    justification:"Según el Glosario INACAP, el sensor inductivo está específicamente diseñado para detectar cuerpos metálicos. Su funcionamiento se basa en una bobina que emite un campo magnético; cuando este campo toma contacto con un cuerpo metálico (como el vástago de acero inoxidable del cilindro), emite una corriente inductiva que genera mayor carga en la bobina, lo que activa la señal de salida. El sensor capacitivo, en cambio, aunque puede detectar metales y no metales, no es la primera opción para detección de posición de metales en ambientes de maquinaria pesada donde la robustez y especificidad al metal son críticas. El sensor inductivo es más resistente a polvo y aceite, condiciones habituales en estos entornos."
+  },
+  {
+    category:"Automatización · Electroválvulas y PLC",
+    tagClass:"tag-auto",
+    type:"Caso Práctico",
+    question:"Un ingeniero diseña la automatización del sistema de volteo de un camión tolva: el PLC debe energizar una electroválvula para extender el cilindro de levante. Según las definiciones del glosario, ¿cómo se produce la cadena de mando completa, desde la orden del PLC hasta el movimiento hidráulico?",
+    options:[
+      "El PLC envía una señal mecánica directa al cilindro hidráulico, sin necesidad de válvula intermedia.",
+      "El PLC (circuito de mando) envía una señal eléctrica a la bobina solenoide de la electroválvula; la bobina genera un campo magnético que mueve el émbolo de la válvula, controlando el flujo de aceite al cilindro hidráulico (actuador), que transforma la energía hidráulica en movimiento mecánico.",
+      "La electroválvula genera la presión hidráulica directamente mediante su bobina solenoide, eliminando la necesidad de bomba hidráulica.",
+      "El PLC acciona directamente el émbolo del cilindro mediante un motor eléctrico lineal integrado en la carcasa del actuador hidráulico."
+    ],
+    correct:1,
+    justification:"La cadena de mando completa integra varios conceptos del Glosario INACAP: el PLC (controlador lógico programable) opera como circuito de mando, procesando las señales de entrada y enviando señales de salida. La electroválvula es una válvula electromecánica diseñada para controlar el flujo de un fluido a través de un conducto; está controlada por una corriente eléctrica a través de una bobina solenoide. Las bobinas son conjuntos de espiras que al ser alimentadas por corriente eléctrica generan un campo magnético que desplaza mecánicamente el carrete o émbolo de la válvula, dirigiendo el aceite. El actuador hidráulico (cilindro) finalmente transforma la energía hidráulica en energía mecánica (movimiento)."
+  },
+  {
+    category:"Automatización · Sensores Especiales",
+    tagClass:"tag-auto",
+    type:"Tecnicismo",
+    question:"En el sistema de frenos de un camión Komatsu 930E se requiere detectar si la presión hidráulica del acumulador de frenos ha caído por debajo del mínimo de seguridad (por ejemplo, bajo 120 bar) para activar una alarma y detener el equipo. ¿Qué elemento del sistema automatizado realiza esta detección y por qué es el más adecuado?",
+    options:[
+      "Un sensor de temperatura (termostato), porque la caída de presión va siempre asociada a un aumento de temperatura.",
+      "Un presostato, que es un transductor que abre o cierra un contacto de un circuito eléctrico dependiendo de la presión del sistema, activando la señal de alarma cuando la presión cae bajo el umbral predeterminado.",
+      "Un sensor magnético, porque el acumulador posee un imán que se aleja cuando la presión baja.",
+      "Un encoder, porque asigna un número proporcional al nivel de presión y calcula si está dentro del rango aceptable."
+    ],
+    correct:1,
+    justification:"Según el Glosario INACAP, el presostato es un transductor que abre o cierra un contacto de un circuito eléctrico dependiendo de la presión del sistema, siendo habitual en sistemas neumáticos o hidráulicos. En el sistema de frenos del Komatsu 930E, el presostato se ajusta al umbral de presión mínima de seguridad; si la presión del acumulador cae por debajo de ese valor, el presostato cambia el estado de su contacto, generando una señal que el PLC o el circuito de mando interpreta para activar alarmas, bloquear el movimiento o detener el equipo. Es el sensor estándar para monitoreo de presión en sistemas de seguridad hidráulica y neumática de maquinaria pesada."
+  },
+  {
+    category:"Automatización · Control de Lazo",
+    tagClass:"tag-auto",
+    type:"Tecnicismo",
+    question:"En un sistema de control de posición de un cilindro hidráulico, el controlador (PLC) lee continuamente la posición real del vástago y la compara con la posición deseada. Si ambas son iguales, el controlador no actúa. Según el glosario, ¿cómo se denomina técnicamente la diferencia entre el valor deseado y el valor real en un sistema de control?",
+    options:[
+      "Perturbación: señal externa que afecta negativamente a la variable de salida.",
+      "Error: definido en un sistema de control como la diferencia que existe entre la variable de salida (posición real) y la referencia (posición deseada).",
+      "Variable manipulada: valor que modifica el controlador para lograr que la variable de salida sea igual a la referencia.",
+      "Bus de comunicación: línea de transmisión de datos entre los elementos del sistema de control."
+    ],
+    correct:1,
+    justification:"Según el Glosario INACAP, el error en un sistema de control se define como la diferencia que existe entre la variable de salida y la referencia (set point o consigna). En el ejemplo del cilindro: la referencia es la posición deseada del vástago, la variable de salida (o variable controlada) es la posición real medida por el sensor, y el error es la diferencia entre ambas. Cuando el error es cero, la variable de salida es igual a la referencia y el controlador no necesita actuar. La perturbación (ej. carga externa) afecta la variable de salida generando error; la variable manipulada (ej. apertura de la electroválvula) es la que ajusta el controlador para reducir ese error."
+  },
+  // ─── BLOQUE 5: MANTENIMIENTO Y SEGURIDAD ───
+  {
+    category:"Mantenimiento · Intervalos y Aceites",
+    tagClass:"tag-mant",
+    type:"Caso Práctico",
+    question:"Un técnico revisa el manual de un tractor de cadenas CAT D6T y necesita determinar bajo qué condición es válido extender el intervalo de cambio de aceite hidráulico de las 2000 horas estándar hasta las 4000 horas. ¿Cuál es la condición técnica correcta según el material de la asignatura?",
+    options:[
+      "Solo se pueden extender los intervalos si la máquina opera en condiciones extremas de temperatura, ya que el calor mejora las propiedades del aceite.",
+      "Se puede extender a 4000 horas si se utiliza un aceite hidráulico aprobado (como HYDO Cat, HEES u otros de la lista CAT) y se realizan muestreos de aceite cada 500 horas (aprox. cada 3 meses), que confirmen que el fluido sigue en buenas condiciones de operación.",
+      "Siempre se puede extender a 4000 horas en cualquier condición, ya que los aceites modernos no se degradan.",
+      "Se extiende a 4000 horas automáticamente si el equipo cuenta con filtros de alta eficiencia instalados, sin necesidad de análisis de aceite."
+    ],
+    correct:1,
+    justification:"Según el material de la Unidad 3 (GMON32), el intervalo normal de cambio de aceite hidráulico es cada 2000 horas de servicio o cada un año. Para extender este intervalo hasta las 4000 horas se deben cumplir dos condiciones simultáneas: (1) Utilizar un aceite hidráulico aprobado por Caterpillar (HYDO Cat, Servo transmisión, HEES o aceite multiuso para tractores), y (2) Realizar análisis de aceite (muestreos) cada 500 horas (aproximadamente cada 3 meses), que confirmen que el aceite aún está en buenas condiciones de operación. Las máquinas en condiciones extremas de operación no están recomendadas para el intervalo extendido y deben mantenerse en 2000 horas o según el programa del manual de servicio."
+  },
+  {
+    category:"Mantenimiento · LOTO y Bloqueo",
+    tagClass:"tag-mant",
+    type:"Caso Práctico",
+    question:"Antes de realizar una mantención en el sistema hidráulico de una pala Komatsu PC5500, el mantenedor debe ejecutar el procedimiento LOTO (Lock Out / Tag Out). ¿Cuál es la secuencia y el propósito correcto de los pasos principales?",
+    options:[
+      "Energizar el sistema hidráulico al máximo para detectar fugas, luego instalar candados y continuar trabajando con el sistema presurizado.",
+      "Detener el equipo y apagar el motor; aislar y bloquear todas las fuentes de energía (eléctrica, hidráulica, neumática); descargar o bloquear acumuladores de energía; colocar tarjetas y rótulos de 'Fuera de Servicio'; verificar que el equipo no pueda ponerse en marcha; y solo entonces iniciar la mantención.",
+      "Retirar el tapón de drenaje de aceite sin apagar el motor, para aprovechar la presión del sistema y vaciar más rápido el depósito.",
+      "Solo es necesario colocar un cono de seguridad frente a la máquina y notificar verbalmente al operador más cercano antes de intervenir el sistema hidráulico."
+    ],
+    correct:1,
+    justification:"El procedimiento LOTO según la Unidad 3 (GMON32) sigue una secuencia crítica de seguridad: (1) Identificar los puntos de detención del motor y energías del equipo; (2) Detener la máquina en un lugar seguro y apagar el motor; (3) Aislar todas las fuentes de energía — eléctrica, hidráulica (incluyendo acumuladores de nitrógeno que deben descargarse o aislarse) y otras; (4) Bloquear los dispositivos de energía con candados (Safekey, cerrojos, bloqueos eléctricos, dispositivos para válvulas); (5) Aplicar rótulos y tarjetas que indiquen 'Fuera de Servicio / En Mantenimiento'; (6) Verificar que ningún mecanismo pueda activarse; y finalmente (7) Iniciar la mantención. La puesta en marcha posterior requiere retirar todos los dispositivos de bloqueo y verificar el área."
+  },
+  {
+    category:"Mantenimiento · Riesgos y Medio Ambiente",
+    tagClass:"tag-mant",
+    type:"Tecnicismo",
+    question:"Durante la mantención de un sistema hidráulico de una excavadora interior mina, ocurre un derrame de aceite hidráulico sobre el piso de la galería. ¿Cuál es el procedimiento técnico y legal correcto de acuerdo con el material de la asignatura?",
+    options:[
+      "Mezclar el aceite derramado con agua para diluirlo y así reducir su concentración antes de descargarlo al drenaje.",
+      "Contener inmediatamente el derrame usando materiales absorbentes; recolectar el aceite contaminado en recipientes adecuados; disponer el residuo de acuerdo con la normativa ambiental vigente y la Ley REP ('el que contamina paga'), que regula la responsabilidad extendida del productor en la eliminación de residuos peligrosos.",
+      "El aceite hidráulico es biodegradable, por lo que puede dejarse evaporar sin intervención adicional.",
+      "Solo se requiere limpiar el aceite si hay riesgo de incendio, ya que en sistemas hidráulicos industriales el aceite mineral no es contaminante."
+    ],
+    correct:1,
+    justification:"La Unidad 3 (GMON32) establece que ante derrames de fluidos hidráulicos se debe: (1) Contener el derrame para evitar que se expanda, usando materiales absorbentes adecuados; (2) Recolectar el fluido derramado en contenedores apropiados; (3) Eliminar los desechos correctamente según la reglamentación y leyes locales. Además, el material menciona la Ley REP (Responsabilidad Extendida del Productor), que establece el principio de 'el que contamina paga', obligando a los responsables a gestionar adecuadamente los residuos generados por sus procesos, incluyendo aceites usados y materiales contaminados. El aceite hidráulico mineral no debe nunca descargarse a drenajes ni al suelo, ya que es un contaminante ambiental de alta persistencia."
+  },
+  {
+    category:"Automatización · Ladder y PLC",
+    tagClass:"tag-auto",
+    type:"Tecnicismo",
+    question:"Un estudiante de Mecánica en Maquinaria Pesada debe programar la secuencia de inicio de una bomba hidráulica en un PLC: al presionar el botón de marcha (contacto normalmente abierto), se activa la electroválvula de inicio y una lámpara piloto. Al presionar paro o activarse el presostato de alta presión, el sistema se detiene. ¿Qué lenguaje de programación es el estándar industrial más utilizado en PLCs para este tipo de lógica de control, y cómo se representa?",
+    options:[
+      "Python o C++, ya que son los únicos lenguajes capaces de procesar señales digitales de sensores industriales en tiempo real.",
+      "Lenguaje Ladder (LD) o diagrama escalera, que representa la lógica de control mediante contactos (normalmente abiertos o cerrados) y bobinas en 'escalones' que emulan la lógica de un circuito eléctrico cableado. Es el más popular en la programación de PLCs industriales.",
+      "Lenguaje de ensamblador (Assembly), único lenguaje de bajo nivel compatible con los procesadores internos de los PLCs de maquinaria pesada.",
+      "HTML y CSS, utilizados para la interfaz visual del PLC en pantallas HMI industriales."
+    ],
+    correct:1,
+    justification:"Según el Glosario INACAP, el Ladder (LD) es un lenguaje de programación por medio de diagrama de contactos o diagrama escalera, y es uno de los más populares en la programación de los controladores lógicos programables (PLCs). Su representación visual imita la lógica de los antiguos circuitos eléctricos cableados: los contactos (sensores, botones, presostatos) se disponen en 'escalones' horizontales y las bobinas (electroválvulas, lámparas, alarmas) a la derecha de cada escalón. Esta similitud con la lógica cableada tradicional hace que sea fácil de leer y diagnosticar por técnicos en terreno, lo que explica su amplia adopción en automatización industrial de maquinaria pesada."
   }
-  makeSidebarToggle('sidebar-left',  'sidebar-left-toggle',  '◀', '▶', 'plv_sidebar_left_open');
-  makeSidebarToggle('sidebar-right', 'sidebar-right-toggle', '▶', '◀', 'plv_sidebar_right_open');
+];
 
-  /* ── Marcar botón de vista activo ────────────────────────────────────── */
-  const viewBtnIds = ['btn-general','btn-plant','btn-network','btn-cabins','btn-main'];
-  viewBtnIds.forEach(id => {
-    document.getElementById(id)?.addEventListener('click', () => {
-      viewBtnIds.forEach(v => document.getElementById(v)?.classList.remove('sb-active'));
-      document.getElementById(id)?.classList.add('sb-active');
-    });
+let currentIndex=0,score=0,selectedIndex=null,answered=false;
+let userAnswers=new Array(questions.length).fill(null);
+
+const quizCard=document.getElementById('quizCard');
+const optionsList=document.getElementById('optionsList');
+const evalBtn=document.getElementById('evalBtn');
+const feedbackPanel=document.getElementById('feedbackPanel');
+const feedbackTitle=document.getElementById('feedbackTitle');
+const feedbackJustification=document.getElementById('feedbackJustification');
+const progressFill=document.getElementById('progressFill');
+const qCounter=document.getElementById('qCounter');
+const scoreCounter=document.getElementById('scoreCounter');
+const resultsScreen=document.getElementById('resultsScreen');
+
+function triggerAnim(el){el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');}
+
+function renderQuestion(){
+  const q=questions[currentIndex];
+  qCounter.textContent=`PREGUNTA ${currentIndex+1} / ${questions.length}`;
+  scoreCounter.textContent=`ACIERTOS ${score}/${questions.length}`;
+  progressFill.style.width=(currentIndex/questions.length*100)+'%';
+  document.getElementById('typeBadge').textContent=q.type;
+  const cat=document.getElementById('categoryBadge');
+  cat.textContent=q.category;cat.className='badge '+q.tagClass;
+  document.getElementById('questionText').textContent=q.question;
+  optionsList.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const li=document.createElement('li');
+    li.className='option';li.tabIndex=0;li.setAttribute('role','button');
+    li.innerHTML=`<span class="option-letter">${String.fromCharCode(65+i)}</span><span class="option-text"></span>`;
+    li.querySelector('.option-text').textContent=opt;
+    li.addEventListener('click',()=>selectOption(i));
+    li.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectOption(i);}});
+    optionsList.appendChild(li);
   });
+  selectedIndex=null;answered=false;
+  feedbackPanel.hidden=true;feedbackPanel.className='feedback-panel';
+  evalBtn.textContent='Evaluar Respuesta';evalBtn.disabled=true;
+  evalBtn.onclick=evaluateAnswer;
+  triggerAnim(quizCard);
+}
 
-  /* ── Observer crítico de litros (una sola instancia) ─────────────────── */
-  setTimeout(() => {
-    const lc = document.getElementById('lc-value');
-    if (!lc) return;
-    new MutationObserver(() => {
-      const num = parseFloat(lc.textContent);
-      lc.classList.toggle('critical', num > 50);
-    }).observe(lc, { childList: true, characterData: true, subtree: true });
-  }, 3000);
+function selectOption(i){
+  if(answered)return;
+  selectedIndex=i;
+  optionsList.querySelectorAll('.option').forEach((el,idx)=>el.classList.toggle('selected',idx===i));
+  evalBtn.disabled=false;
+}
 
-  /* ── Panel de atajos — botón ? ───────────────────────────────────────── */
-  document.getElementById('btn-shortcuts')?.addEventListener('click', () => {
-    const p = document.getElementById('shortcuts-panel');
-    if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
+function evaluateAnswer(){
+  if(selectedIndex===null||answered)return;
+  answered=true;
+  const q=questions[currentIndex];
+  optionsList.querySelectorAll('.option').forEach((el,idx)=>{
+    el.classList.add('disabled');el.tabIndex=-1;
+    if(idx===q.correct)el.classList.add('correct-answer');
+    if(idx===selectedIndex&&idx!==q.correct)el.classList.add('incorrect-answer');
   });
+  const ok=selectedIndex===q.correct;
+  userAnswers[currentIndex]=ok;
+  if(ok)score++;
+  scoreCounter.textContent=`ACIERTOS ${score}/${questions.length}`;
+  progressFill.style.width=((currentIndex+1)/questions.length*100)+'%';
+  feedbackPanel.hidden=false;
+  feedbackPanel.className='feedback-panel '+(ok?'feedback-correct':'feedback-incorrect');
+  feedbackTitle.textContent=ok?'✅ Respuesta Correcta':'❌ Respuesta Incorrecta';
+  feedbackJustification.textContent=q.justification;
+  evalBtn.disabled=false;
+  evalBtn.textContent=(currentIndex===questions.length-1)?'Ver Resultados':'Siguiente Pregunta';
+  evalBtn.onclick=()=>{
+    if(currentIndex===questions.length-1){showResults();}
+    else{currentIndex++;renderQuestion();window.scrollTo({top:0,behavior:'smooth'});}
+  };
+}
 
-});
+function showResults(){
+  quizCard.hidden=true;resultsScreen.hidden=false;triggerAnim(resultsScreen);
+  const pct=Math.round(score/questions.length*100);
+  document.getElementById('resultScoreText').textContent=`${score}/${questions.length}`;
+  document.getElementById('resultPct').textContent=`${pct}%`;
+  let msg,color;
+  if(pct>=90){msg='¡Excelente! Dominas los sistemas hidráulicos y neumáticos. Estás listo para el examen.';color='var(--accent-green)';}
+  else if(pct>=70){msg='Buen manejo del contenido. Repasa los temas marcados en rojo antes del examen.';color='var(--accent-green)';}
+  else if(pct>=50){msg='Nivel intermedio. Refuerza los conceptos de válvulas, automatización y LOTO.';color='var(--accent-amber)';}
+  else{msg='Necesitas repasar el material de componentes hidráulicos, automatización y mantenimiento.';color='var(--accent-red)';}
+  document.getElementById('resultMessage').textContent=msg;
+  const circ=2*Math.PI*85;
+  const gf=document.getElementById('gaugeFill');
+  gf.style.stroke=color;gf.style.strokeDasharray=circ;gf.style.strokeDashoffset=circ;
+  requestAnimationFrame(()=>setTimeout(()=>{gf.style.strokeDashoffset=circ-(circ*pct/100);},80));
+  const grid=document.getElementById('breakdownGrid');
+  grid.innerHTML='';
+  userAnswers.forEach((ans,i)=>{
+    const d=document.createElement('div');
+    d.className='led '+(ans?'led-correct':'led-incorrect');
+    d.textContent=String(i+1);d.title=questions[i].category;
+    grid.appendChild(d);
+  });
+}
+
+function restart(){
+  currentIndex=0;score=0;selectedIndex=null;answered=false;
+  userAnswers=new Array(questions.length).fill(null);
+  resultsScreen.hidden=true;quizCard.hidden=false;
+  renderQuestion();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.getElementById('restartBtn').addEventListener('click',restart);
+renderQuestion();
 </script>
-
-<script type="module" src="js/main.js"></script>
-
 </body>
 </html>
